@@ -65,12 +65,12 @@ a {
 }
 
 .brand-logo {
-  width: 38px;
-  height: 38px;
+  width: clamp(44px, 5.2vw, 72px);
+  height: auto;
   object-fit: contain;
   border-radius: 10px;
   background: rgba(255, 255, 255, 0.08);
-  padding: 0.2rem;
+  padding: 0.15rem;
 }
 
 .nav-links {
