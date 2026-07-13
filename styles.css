@@ -247,9 +247,16 @@ p {
 
 .gallery-item {
   min-height: 190px;
-  border-radius: 16px;
-  background: linear-gradient(135deg, rgba(76, 201, 240, 0.25), rgba(58, 134, 255, 0.2));
+  border-radius: 12px;
+  overflow: hidden;
   border: 1px solid var(--border);
+}
+
+.gallery-img {
+  width: 100%;
+  height: 100%;
+  display: block;
+  object-fit: cover;
 }
 
 .announcement-list {
