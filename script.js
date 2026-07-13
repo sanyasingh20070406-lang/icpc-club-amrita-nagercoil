@@ -14,7 +14,7 @@ if (toggle && navLinks) {
 }
 
 // Gallery lightbox with carousel
-const groupButtons = document.querySelectorAll('.open-group');
+const groupCards = document.querySelectorAll('.group-card');
 const lightbox = document.getElementById('lightbox');
 const lbCaption = document.querySelector('.lb-caption');
 const lbPrev = document.querySelector('.lb-prev');
@@ -115,10 +115,8 @@ carouselTrack.addEventListener('transitionend', () => {
   isMoving = false;
 });
 
-groupButtons.forEach((btn) => {
-  btn.addEventListener('click', (e) => {
-    const card = e.target.closest('.group-card');
-    if (!card) return;
+groupCards.forEach((card) => {
+  card.addEventListener('click', () => {
     const images = card.dataset.images ? card.dataset.images.split(',') : [];
     const title = card.dataset.title || '';
     openLightbox(images, title, 0);

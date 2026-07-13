@@ -282,6 +282,10 @@ p {
   gap: 0.6rem;
 }
 
+.group-card {
+  cursor: pointer;
+}
+
 .group-meta h3 {
   margin: 0;
   font-size: 1rem;
@@ -291,14 +295,6 @@ p {
   color: var(--muted);
   font-size: 0.85rem;
   margin-top: 0.25rem;
-}
-
-.open-group {
-  background: transparent;
-  border: none;
-  color: var(--accent);
-  font-size: 1.4rem;
-  cursor: pointer;
 }
 
 /* Lightbox styles */
