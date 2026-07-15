@@ -157,6 +157,72 @@ carouselContainer.addEventListener('pointerdown', (e) => {
   carouselTrack.style.transition = 'none';
   carouselContainer.setPointerCapture(e.pointerId);
 });
+
+/* Wave canvas animation (lightweight sine waves) */
+(function () {
+  const canvas = document.getElementById('wave-canvas');
+  if (!canvas) return;
+  const ctx = canvas.getContext('2d');
+
+  let width = 0;
+  let height = 0;
+  let rafId = null;
+
+  const waves = [
+    { amp: 18, len: 0.012, speed: 0.8, phase: 0, color: 'rgba(58,134,255,0.14)' },
+    { amp: 10, len: 0.01, speed: 0.6, phase: 50, color: 'rgba(76,201,240,0.10)' },
+    { amp: 6, len: 0.008, speed: 0.4, phase: 100, color: 'rgba(255,255,255,0.04)' }
+  ];
+
+  function resize() {
+    const dpr = window.devicePixelRatio || 1;
+    width = canvas.clientWidth;
+    height = canvas.clientHeight;
+    canvas.width = Math.max(0, Math.floor(width * dpr));
+    canvas.height = Math.max(0, Math.floor(height * dpr));
+    ctx.scale(dpr, dpr);
+  }
+
+  let t = 0;
+  function draw() {
+    ctx.clearRect(0, 0, width, height);
+    waves.forEach((w, idx) => {
+      ctx.beginPath();
+      ctx.moveTo(0, height);
+      for (let x = 0; x <= width; x += 2) {
+        const y = height / 2 + Math.sin((x * w.len) + (t * w.speed) + w.phase) * w.amp;
+        ctx.lineTo(x, y);
+      }
+      ctx.lineTo(width, height);
+      ctx.closePath();
+      ctx.fillStyle = w.color;
+      ctx.fill();
+    });
+    t += 0.016;
+    rafId = requestAnimationFrame(draw);
+  }
+
+  function start() {
+    cancelAnimationFrame(rafId);
+    resize();
+    draw();
+  }
+
+  window.addEventListener('resize', () => {
+    // debounce
+    clearTimeout(window._waveResizeTimer);
+    window._waveResizeTimer = setTimeout(() => {
+      resize();
+    }, 120);
+  });
+
+  // start when DOM loaded
+  if (document.readyState === 'complete' || document.readyState === 'interactive') {
+    start();
+  } else {
+    window.addEventListener('DOMContentLoaded', start);
+  }
+})();
 carouselContainer.addEventListener('pointermove', (e) => {
   if (pointerStart === null) return;
   pointerDelta = e.clientX - pointerStart;
