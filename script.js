@@ -1,40 +1,27 @@
-const toggle = document.querySelector('.menu-toggle');
-const navLinks = document.querySelector('.nav-links');
-
-if (toggle && navLinks) {
-  toggle.addEventListener('click', () => {
-    navLinks.classList.toggle('active');
-  });
-
-  document.querySelectorAll('.nav-links a').forEach((link) => {
-    link.addEventListener('click', () => {
-      navLinks.classList.remove('active');
-    });
-  });
-}
-
-// Gallery lightbox with carousel
-const groupCards = document.querySelectorAll('.group-card');
-const lightbox = document.getElementById('lightbox');
-const lbCaption = document.querySelector('.lb-caption');
-const lbPrev = document.querySelector('.lb-prev');
-const lbNext = document.querySelector('.lb-next');
-const lbClose = document.querySelector('.lb-close');
-const carouselTrack = document.querySelector('.carousel-track');
-const carouselContainer = document.querySelector('.carousel');
+let toggle;
+let navLinks;
+let groupCards;
+let lightbox;
+let lbCaption;
+let lbPrev;
+let lbNext;
+let lbClose;
+let carouselTrack;
+let carouselContainer;
 
 let currentGroup = [];
 let currentIndex = 0;
 let isMoving = false;
 let slideWidth = 0;
+let pointerStart = null;
+let pointerDelta = 0;
 
 function buildCarousel(images, title, startIndex = 0) {
   currentGroup = images.slice();
   currentIndex = startIndex;
-  // clear track
   carouselTrack.innerHTML = '';
-  // create slides
   const slides = [];
+
   currentGroup.forEach((src, i) => {
     const slide = document.createElement('div');
     slide.className = 'carousel-slide';
@@ -44,19 +31,17 @@ function buildCarousel(images, title, startIndex = 0) {
     slide.appendChild(img);
     slides.push(slide);
   });
-  // If only one image, still allow loop by duplicating
+
   if (slides.length === 1) {
-    const clone = slides[0].cloneNode(true);
-    slides.push(clone);
+    slides.push(slides[0].cloneNode(true));
   }
-  // clone first and last for infinite loop
+
   const firstClone = slides[0].cloneNode(true);
   const lastClone = slides[slides.length - 1].cloneNode(true);
   carouselTrack.appendChild(lastClone);
   slides.forEach((s) => carouselTrack.appendChild(s));
   carouselTrack.appendChild(firstClone);
 
-  // set sizes
   slideWidth = carouselContainer.clientWidth;
   carouselTrack.style.transition = 'none';
   carouselTrack.style.transform = `translateX(${-(currentIndex + 1) * slideWidth}px)`;
@@ -78,85 +63,144 @@ function closeLightbox() {
   carouselTrack.innerHTML = '';
 }
 
+function updateCaption() {
+  const currentImage = carouselTrack.querySelector('.carousel-slide img');
+  const title = currentImage ? currentImage.alt.split(' - ')[0] : '';
+  lbCaption.textContent = `${title} (${currentIndex + 1} of ${currentGroup.length})`;
+}
+
 function goTo(index) {
   if (!currentGroup.length || isMoving) return;
   isMoving = true;
   currentIndex = (index + currentGroup.length) % currentGroup.length;
   carouselTrack.style.transform = `translateX(${-(currentIndex + 1) * slideWidth}px)`;
-  lbCaption.textContent = `${carouselTrack.querySelector('.carousel-slide img').alt.split(' - ')[0] || ''} (${currentIndex + 1} of ${currentGroup.length})`;
+  updateCaption();
 }
 
 function nextSlide() { goTo(currentIndex + 1); }
 function prevSlide() { goTo(currentIndex - 1); }
 
-carouselTrack.addEventListener('transitionend', () => {
-  // handle loop reset
-  const slides = carouselTrack.querySelectorAll('.carousel-slide');
-  const total = slides.length;
-  if (slides.length === 0) { isMoving = false; return; }
-  // when at cloned first (index = currentGroup.length) -> jump to real first
-  if (currentIndex >= currentGroup.length) {
-    currentIndex = 0;
-    carouselTrack.style.transition = 'none';
-    carouselTrack.style.transform = `translateX(${-(currentIndex + 1) * slideWidth}px)`;
-    // force reflow then restore transition
-    void carouselTrack.offsetWidth;
-    carouselTrack.style.transition = 'transform 0.45s ease';
-  }
-  // when at cloned last (index = -1) -> jump to real last
-  if (currentIndex < 0) {
-    currentIndex = currentGroup.length - 1;
-    carouselTrack.style.transition = 'none';
-    carouselTrack.style.transform = `translateX(${-(currentIndex + 1) * slideWidth}px)`;
-    void carouselTrack.offsetWidth;
-    carouselTrack.style.transition = 'transform 0.45s ease';
-  }
-  lbCaption.textContent = `${carouselTrack.querySelector('.carousel-slide img').alt.split(' - ')[0] || ''} (${currentIndex + 1} of ${currentGroup.length})`;
-  isMoving = false;
-});
+function attachCarouselListeners() {
+  carouselTrack.addEventListener('transitionend', () => {
+    const slides = carouselTrack.querySelectorAll('.carousel-slide');
+    if (slides.length === 0) {
+      isMoving = false;
+      return;
+    }
 
-groupCards.forEach((card) => {
-  card.addEventListener('click', () => {
-    const images = card.dataset.images ? card.dataset.images.split(',') : [];
-    const title = card.dataset.title || '';
-    openLightbox(images, title, 0);
+    if (currentIndex >= currentGroup.length) {
+      currentIndex = 0;
+      carouselTrack.style.transition = 'none';
+      carouselTrack.style.transform = `translateX(${-(currentIndex + 1) * slideWidth}px)`;
+      void carouselTrack.offsetWidth;
+      carouselTrack.style.transition = 'transform 0.45s ease';
+    }
+
+    if (currentIndex < 0) {
+      currentIndex = currentGroup.length - 1;
+      carouselTrack.style.transition = 'none';
+      carouselTrack.style.transform = `translateX(${-(currentIndex + 1) * slideWidth}px)`;
+      void carouselTrack.offsetWidth;
+      carouselTrack.style.transition = 'transform 0.45s ease';
+    }
+
+    updateCaption();
+    isMoving = false;
   });
-});
 
-lbClose.addEventListener('click', closeLightbox);
-lightbox.addEventListener('click', (e) => {
-  if (e.target.classList.contains('lightbox-backdrop')) closeLightbox();
-});
+  groupCards.forEach((card) => {
+    card.addEventListener('click', () => {
+      const images = card.dataset.images ? card.dataset.images.split(',') : [];
+      const title = card.dataset.title || '';
+      openLightbox(images, title, 0);
+    });
+  });
 
-lbPrev.addEventListener('click', prevSlide);
-lbNext.addEventListener('click', nextSlide);
+  lbClose.addEventListener('click', closeLightbox);
+  lightbox.addEventListener('click', (e) => {
+    if (e.target.classList.contains('lightbox-backdrop')) closeLightbox();
+  });
 
-// keyboard
-document.addEventListener('keydown', (e) => {
-  if (lightbox.classList.contains('hidden')) return;
-  if (e.key === 'ArrowLeft') prevSlide();
-  if (e.key === 'ArrowRight') nextSlide();
-  if (e.key === 'Escape') closeLightbox();
-});
+  lbPrev.addEventListener('click', prevSlide);
+  lbNext.addEventListener('click', nextSlide);
 
-// handle resize
-window.addEventListener('resize', () => {
-  if (!carouselContainer) return;
-  slideWidth = carouselContainer.clientWidth;
-  carouselTrack.style.transition = 'none';
-  carouselTrack.style.transform = `translateX(${-(currentIndex + 1) * slideWidth}px)`;
-  void carouselTrack.offsetWidth;
-  carouselTrack.style.transition = 'transform 0.45s ease';
-});
+  document.addEventListener('keydown', (e) => {
+    if (lightbox.classList.contains('hidden')) return;
+    if (e.key === 'ArrowLeft') prevSlide();
+    if (e.key === 'ArrowRight') nextSlide();
+    if (e.key === 'Escape') closeLightbox();
+  });
 
-// touch / pointer swipe
-let pointerStart = null;
-let pointerDelta = 0;
-carouselContainer.addEventListener('pointerdown', (e) => {
-  pointerStart = e.clientX;
-  carouselTrack.style.transition = 'none';
-  carouselContainer.setPointerCapture(e.pointerId);
-});
+  window.addEventListener('resize', () => {
+    if (!carouselContainer) return;
+    slideWidth = carouselContainer.clientWidth;
+    carouselTrack.style.transition = 'none';
+    carouselTrack.style.transform = `translateX(${-(currentIndex + 1) * slideWidth}px)`;
+    void carouselTrack.offsetWidth;
+    carouselTrack.style.transition = 'transform 0.45s ease';
+  });
+
+  carouselContainer.addEventListener('pointerdown', (e) => {
+    pointerStart = e.clientX;
+    carouselTrack.style.transition = 'none';
+    carouselContainer.setPointerCapture(e.pointerId);
+  });
+
+  carouselContainer.addEventListener('pointermove', (e) => {
+    if (pointerStart === null) return;
+    pointerDelta = e.clientX - pointerStart;
+    carouselTrack.style.transform = `translateX(${-(currentIndex + 1) * slideWidth + pointerDelta}px)`;
+  });
+
+  carouselContainer.addEventListener('pointerup', () => {
+    if (pointerStart === null) return;
+    carouselTrack.style.transition = 'transform 0.45s ease';
+    if (Math.abs(pointerDelta) > 60) {
+      if (pointerDelta > 0) prevSlide(); else nextSlide();
+    } else {
+      carouselTrack.style.transform = `translateX(${-(currentIndex + 1) * slideWidth}px)`;
+    }
+    pointerStart = null;
+    pointerDelta = 0;
+  });
+}
+
+function init() {
+  toggle = document.querySelector('.menu-toggle');
+  navLinks = document.querySelector('.nav-links');
+  groupCards = document.querySelectorAll('.group-card');
+  lightbox = document.getElementById('lightbox');
+  lbCaption = document.querySelector('.lb-caption');
+  lbPrev = document.querySelector('.lb-prev');
+  lbNext = document.querySelector('.lb-next');
+  lbClose = document.querySelector('.lb-close');
+  carouselTrack = document.querySelector('.carousel-track');
+  carouselContainer = document.querySelector('.carousel');
+
+  if (toggle && navLinks) {
+    toggle.addEventListener('click', () => {
+      navLinks.classList.toggle('active');
+    });
+
+    document.querySelectorAll('.nav-links a').forEach((link) => {
+      link.addEventListener('click', () => {
+        navLinks.classList.remove('active');
+      });
+    });
+  }
+
+  if (!groupCards.length || !lightbox || !lbCaption || !lbPrev || !lbNext || !lbClose || !carouselTrack || !carouselContainer) {
+    return;
+  }
+
+  attachCarouselListeners();
+}
+
+if (document.readyState === 'loading') {
+  document.addEventListener('DOMContentLoaded', init);
+} else {
+  init();
+}
 
 /* Wave canvas animation (lightweight sine waves) */
 (function () {
@@ -180,13 +224,14 @@ carouselContainer.addEventListener('pointerdown', (e) => {
     height = canvas.clientHeight;
     canvas.width = Math.max(0, Math.floor(width * dpr));
     canvas.height = Math.max(0, Math.floor(height * dpr));
-    ctx.scale(dpr, dpr);
+    ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
   }
 
   let t = 0;
+
   function draw() {
     ctx.clearRect(0, 0, width, height);
-    waves.forEach((w, idx) => {
+    waves.forEach((w) => {
       ctx.beginPath();
       ctx.moveTo(0, height);
       for (let x = 0; x <= width; x += 2) {
@@ -209,34 +254,15 @@ carouselContainer.addEventListener('pointerdown', (e) => {
   }
 
   window.addEventListener('resize', () => {
-    // debounce
     clearTimeout(window._waveResizeTimer);
     window._waveResizeTimer = setTimeout(() => {
       resize();
     }, 120);
   });
 
-  // start when DOM loaded
   if (document.readyState === 'complete' || document.readyState === 'interactive') {
     start();
   } else {
     window.addEventListener('DOMContentLoaded', start);
   }
 })();
-carouselContainer.addEventListener('pointermove', (e) => {
-  if (pointerStart === null) return;
-  pointerDelta = e.clientX - pointerStart;
-  carouselTrack.style.transform = `translateX(${-(currentIndex + 1) * slideWidth + pointerDelta}px)`;
-});
-carouselContainer.addEventListener('pointerup', (e) => {
-  if (pointerStart === null) return;
-  carouselTrack.style.transition = 'transform 0.45s ease';
-  if (Math.abs(pointerDelta) > 60) {
-    if (pointerDelta > 0) prevSlide(); else nextSlide();
-  } else {
-    // snap back
-    carouselTrack.style.transform = `translateX(${-(currentIndex + 1) * slideWidth}px)`;
-  }
-  pointerStart = null;
-  pointerDelta = 0;
-});
