@@ -26,6 +26,60 @@ body {
   line-height: 1.7;
 }
 
+.join-hero {
+  min-height: 45vh;
+  background: linear-gradient(120deg, rgba(58, 134, 255, 0.24), rgba(7, 17, 31, 0.95)), var(--bg);
+}
+
+.join-container {
+  display: grid;
+  grid-template-columns: 1.1fr 0.9fr;
+  gap: 2rem;
+  align-items: start;
+  margin-top: 1.5rem;
+}
+
+.join-card {
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 20px;
+  padding: 2rem;
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.18);
+}
+
+.join-card h2 {
+  margin-bottom: 1rem;
+}
+
+.join-form {
+  display: grid;
+  gap: 1rem;
+}
+
+.join-form label {
+  font-weight: 600;
+  color: var(--text);
+}
+
+.join-form input {
+  width: 100%;
+  padding: 0.95rem 1rem;
+  border-radius: 12px;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  background: rgba(255, 255, 255, 0.05);
+  color: var(--text);
+}
+
+.join-form input::placeholder {
+  color: var(--muted);
+}
+
+@media (max-width: 900px) {
+  .join-container {
+    grid-template-columns: 1fr;
+  }
+}
+
 a {
   color: inherit;
   text-decoration: none;
