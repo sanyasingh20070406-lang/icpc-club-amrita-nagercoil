@@ -3,73 +3,132 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>ICPC Club</title>
+    <title>ICPC Club - Amrita Nagercoil</title>
     <meta
       name="description"
-      content="A modern and professional website for the ICPC Club, featuring information about the club, events, team, gallery, announcements, and contact details."
+      content="A professional, student-driven community for competitive programming, training, and algorithmic growth at Amrita Vishwa Vidyapeetham Nagercoil."
     />
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-    <link
-      href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap"
-      rel="stylesheet"
-    />
     <link rel="stylesheet" href="styles.css" />
   </head>
   <body>
+    <div class="page-border" aria-hidden="true"></div>
+    <!-- Background Blur Orbs -->
+    <div class="glow-orb orb-red" aria-hidden="true"></div>
+    <div class="glow-orb orb-blue" aria-hidden="true"></div>
+    <div class="glow-orb orb-yellow" aria-hidden="true"></div>
+
     <header class="hero">
-      
-        <nav class="navbar">
-          <a class="edge-logo left" href="https://icpc.foundation" target="_blank" rel="noopener noreferrer">
-            <img src="icpc.webp" alt="ICPC Foundation linked club logo" class="edge-logo-img" />
+      <nav class="navbar">
+        <div class="brand-wrapper">
+          <a class="edge-logo" href="https://icpc.foundation" target="_blank" rel="noopener noreferrer">
+            <img src="images/icpc.webp" alt="ICPC Foundation linked club logo" class="edge-logo-img" />
           </a>
+          <a class="brand" href="#home">ICPC Club <span>Amrita Nagercoil</span></a>
+        </div>
 
-          <div class="brand-center">
-            <a class="brand" href="#home">ICPC Club Amrita Nagercoil</a>
-          </div>
+        <div class="nav-links">
+          <a href="#about">About</a>
+          <a href="#why-join">Why Join</a>
+          <a href="#events">Events</a>
+          <a href="#team">Team</a>
+          <a href="#gallery">Gallery</a>
+          <a href="#announcements">Announcements</a>
+          <a href="#contact">Contact</a>
+        </div>
 
-          <div class="nav-right">
-            <button class="menu-toggle" aria-label="Toggle navigation">
-              <span></span>
-              <span></span>
-              <span></span>
-            </button>
-            <div class="nav-links">
-              <a href="#about">About</a>
-              <a href="#why-join">Why Join</a>
-              <a href="#events">Events</a>
-              <a href="#team">Team</a>
-              <a href="#gallery">Gallery</a>
-              <a href="#announcements">Announcements</a>
-              <a href="#contact">Contact</a>
-            </div>
-            <a href="join-us.html" class="btn btn-join" target="_blank" rel="noopener">Join Us</a>
-          </div>
-        </nav>
+        <div class="nav-actions">
+          <a href="join-us.html" class="btn btn-join" target="_blank" rel="noopener">Join Us</a>
+        </div>
+
+        <button class="menu-toggle" aria-label="Toggle navigation">
+          <span></span>
+          <span></span>
+          <span></span>
+        </button>
+      </nav>
 
       <div class="hero-content" id="home">
         <div class="hero-text">
-          <p class="eyebrow">Student Community • Competitive Programming</p>
-          <h1>Code. Compete. Create.</h1>
+          <p class="eyebrow"><span class="eyebrow-dot"></span>Student Community • Competitive Programming</p>
+          <img src="images/icpc.webp" alt="ICPC Official Logo" class="hero-logo" />
+          <h1><span class="text-grad-think">Think.</span> <span class="text-grad-create">Create.</span> <span class="text-grad-solve">Solve.</span></h1>
           <p class="hero-tagline">
-            Join the ICPC Club and grow your problem-solving skills through teamwork,
-            training, and exciting competitions.
+            Join the Amrita ICPC Club. Sharpen your analytical skills, master data structures and algorithms, and prepare to excel in global coding competitions.
           </p>
           <div class="hero-actions">
-            <a href="#contact" class="btn btn-primary">Join the Club</a>
+            <a href="join-us.html" class="btn btn-primary" target="_blank" rel="noopener">Join the Club</a>
             <a href="#events" class="btn btn-secondary">Explore Events</a>
           </div>
         </div>
       </div>
-
-    <!-- Dynamic wave canvas background (appears before Introduction) -->
-    <div id="wave-container">
-      <canvas id="wave-canvas" aria-hidden="true"></canvas>
-    </div>
-
     </header>
+    <!-- Hiring Panel Section -->
+    <section class="container" aria-label="Hiring Partners">
+      <div class="hiring-panel">
+        <h2 class="hiring-title">Look who's hiring from us</h2>
+        
+        <div class="marquee-container">
+          <!-- Marquee Track 1 (Left) -->
+          <div class="marquee-track track-left">
+            <div class="marquee-content">
+              <div class="company-logo logo-google">
+                <span style="color:#4285F4">G</span><span style="color:#EA4335">o</span><span style="color:#FBBC05">o</span><span style="color:#4285F4">g</span><span style="color:#34A853">l</span><span style="color:#EA4335">e</span>
+              </div>
+              <div class="company-logo logo-meta">Meta</div>
+              <div class="company-logo logo-microsoft"><span class="ms-icon"></span>Microsoft</div>
+              <div class="company-logo logo-jane">Jane Street</div>
+              <div class="company-logo logo-bloomberg">Bloomberg</div>
+              <div class="company-logo logo-amazon">amazon</div>
+              <div class="company-logo logo-citadel">CITADEL</div>
+              <div class="company-logo logo-optiver">Optiver</div>
+            </div>
+            <!-- Duplicate for infinite scroll loop -->
+            <div class="marquee-content" aria-hidden="true">
+              <div class="company-logo logo-google">
+                <span style="color:#4285F4">G</span><span style="color:#EA4335">o</span><span style="color:#FBBC05">o</span><span style="color:#4285F4">g</span><span style="color:#34A853">l</span><span style="color:#EA4335">e</span>
+              </div>
+              <div class="company-logo logo-meta">Meta</div>
+              <div class="company-logo logo-microsoft"><span class="ms-icon"></span>Microsoft</div>
+              <div class="company-logo logo-jane">Jane Street</div>
+              <div class="company-logo logo-bloomberg">Bloomberg</div>
+              <div class="company-logo logo-amazon">amazon</div>
+              <div class="company-logo logo-citadel">CITADEL</div>
+              <div class="company-logo logo-optiver">Optiver</div>
+            </div>
+          </div>
+          
+          <!-- Marquee Track 2 (Right) -->
+          <div class="marquee-track track-right">
+            <div class="marquee-content">
+              <div class="company-logo logo-deshaw">D.E. Shaw & Co.</div>
+              <div class="company-logo logo-apple"> Apple</div>
+              <div class="company-logo logo-tower">Tower Research</div>
+              <div class="company-logo logo-atlassian"><span class="atlas-icon"></span>Atlassian</div>
+              <div class="company-logo logo-hrt">HRT</div>
+              <div class="company-logo logo-uber">Uber</div>
+              <div class="company-logo logo-netflix">NETFLIX</div>
+              <div class="company-logo logo-rubrik">rubrik</div>
+            </div>
+            <!-- Duplicate for infinite scroll loop -->
+            <div class="marquee-content" aria-hidden="true">
+              <div class="company-logo logo-deshaw">D.E. Shaw & Co.</div>
+              <div class="company-logo logo-apple"> Apple</div>
+              <div class="company-logo logo-tower">Tower Research</div>
+              <div class="company-logo logo-atlassian"><span class="atlas-icon"></span>Atlassian</div>
+              <div class="company-logo logo-hrt">HRT</div>
+              <div class="company-logo logo-uber">Uber</div>
+              <div class="company-logo logo-netflix">NETFLIX</div>
+              <div class="company-logo logo-rubrik">rubrik</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
 
     <main>
+      <!-- About Section -->
       <section id="about" class="section intro-section">
         <div class="container split-layout">
           <div>
@@ -90,164 +149,205 @@
             </p>
           </div>
         </div>
-      </section>
 
-      <section class="section alt-section">
-        <div class="container">
-          <p class="section-label">What is ICPC?</p>
-          <h2>One of the world’s most respected programming competitions</h2>
-          <p>
-            The International Collegiate Programming Contest (ICPC) is one of the most
-            prestigious programming competitions in the world. It brings together
-            university students from around the globe to solve complex algorithmic
-            problems under time pressure and in team-based settings.
-          </p>
-          <p>
-            ICPC is more than a contest; it is a platform for students to sharpen
-            their analytical thinking, improve coding efficiency, and learn how to work
-            collaboratively in high-pressure environments. Its global presence and strong
-            reputation make it a valuable experience for aspiring software engineers,
-            data scientists, and technologists.
-          </p>
+        <!-- Tri-pillar Showcase (Think. Create. Solve) -->
+        <div class="container motto-grid">
+          <div class="motto-card think">
+            <div class="motto-badge">01</div>
+            <h3>Think</h3>
+            <p>Deconstruct complex challenges, identify mathematical patterns, and construct optimal solutions before touching the keyboard.</p>
+          </div>
+          <div class="motto-card create">
+            <div class="motto-badge">02</div>
+            <h3>Create</h3>
+            <p>Translate abstract concepts into clean, robust, and lightning-fast implementations using C++, Java, or Python.</p>
+          </div>
+          <div class="motto-card solve">
+            <div class="motto-badge">03</div>
+            <h3>Solve</h3>
+            <p>Debug, refactor, pass edge cases, and push solutions through rigorous time limit tests under global competition conditions.</p>
+          </div>
         </div>
       </section>
 
+      <!-- What is ICPC Section -->
+      <section class="section alt-section">
+        <div class="container split-layout">
+          <div>
+            <p class="section-label">What is ICPC?</p>
+            <h2>One of the world’s most respected programming competitions</h2>
+          </div>
+          <div>
+            <p>
+              The International Collegiate Programming Contest (ICPC) is the premier global
+              programming competition for university students. It challenges teams of three
+              to solve a demanding set of algorithmic problems under an intense 5-hour limit,
+              fostering teamwork, creativity, and performance under pressure.
+            </p>
+            <p>
+              More than a contest, ICPC is a launchpad. Preparing for it develops exceptional
+              analytical depth, memory efficiency, and execution speed. It is highly valued by 
+              leading global technology recruiters and research institutions alike.
+            </p>
+          </div>
+        </div>
+      </section>
+
+      <!-- Why Join Section -->
       <section id="why-join" class="section">
         <div class="container">
-          <p class="section-label">Why Join?</p>
-          <h2>Grow your skills and unlock new opportunities</h2>
+          <div style="text-align: center; margin-bottom: 3rem;">
+            <p class="section-label">Why Join?</p>
+            <h2>Grow your skills and unlock new opportunities</h2>
+          </div>
           <div class="card-grid">
             <article class="card">
+              <span class="team-role">Pillar 01</span>
               <h3>Skill Development</h3>
-              <p>Strengthen your problem-solving, algorithmic thinking, and coding confidence.</p>
+              <p>Strengthen your grasp of complex algorithms, advanced data structures, and mathematical proofs.</p>
             </article>
             <article class="card">
+              <span class="team-role">Pillar 02</span>
               <h3>Teamwork</h3>
-              <p>Learn how to collaborate effectively in fast-paced and competitive environments.</p>
+              <p>Learn how to collaborate seamlessly, split tasks, and optimize resource usage in team-based rounds.</p>
             </article>
             <article class="card">
+              <span class="team-role">Pillar 03</span>
               <h3>Competitions</h3>
-              <p>Prepare for contests and mock rounds that build discipline and experience.</p>
+              <p>Participate in regular mock contests and practice rounds that emulate actual ICPC scoring systems.</p>
             </article>
             <article class="card">
+              <span class="team-role">Pillar 04</span>
               <h3>Career Growth</h3>
-              <p>Gain exposure to internships, technical communities, and future career pathways.</p>
+              <p>Gain access to exclusive technical webinars, mentoring circles, and premium industry networks.</p>
             </article>
-              <article class="card">
-                <h3>Recruiter Visibility</h3>
-                <p>Helps candidates stand out to recruiters by demonstrating competitive programming achievements on resumes.</p>
-              </article>
+            <article class="card">
+              <span class="team-role">Pillar 05</span>
+              <h3>Recruiter Visibility</h3>
+              <p>Elevate your engineering profile. Highlight verified contest rankings and coding accomplishments on your resume.</p>
+            </article>
           </div>
         </div>
       </section>
 
+      <!-- Events Section -->
       <section id="events" class="section alt-section">
         <div class="container">
-          <p class="section-label">Events and Workshops</p>
-          <h2>Learning experiences designed to inspire and challenge</h2>
+          <div style="text-align: center; margin-bottom: 3rem;">
+            <p class="section-label">Events and Workshops</p>
+            <h2>Learning experiences designed to inspire and challenge</h2>
+          </div>
           <div class="card-grid">
             <article class="card">
-              <h3>Weekly Practice Sessions</h3>
-              <p>Sharpen your programming skills with guided practice and hands-on problem solving.</p>
+              <span class="team-role" style="color: var(--icpc-blue);">Weekly</span>
+              <h3>Practice Sessions</h3>
+              <p>Solve algorithm sets collaboratively and discuss multiple code approaches with peers.</p>
             </article>
             <article class="card">
-              <h3>Workshops</h3>
-              <p>Explore topics such as algorithms, data structures, and interview preparation.</p>
+              <span class="team-role" style="color: var(--icpc-red);">Interactive</span>
+              <h3>Technical Workshops</h3>
+              <p>Deep dives into recursion, dynamic programming, graph theory, and computational geometry.</p>
             </article>
             <article class="card">
+              <span class="team-role" style="color: var(--icpc-blue);">Contests</span>
               <h3>Mock Contests</h3>
-              <p>Experience realistic contest conditions to build confidence and performance.</p>
+              <p>Experience real-time high pressure scenarios using standard ICPC platforms and strict time limits.</p>
             </article>
             <article class="card">
+              <span class="team-role" style="color: var(--icpc-yellow);">Monthly</span>
               <h3>Club Meeting</h3>
-              <p>Join our club meetings to collaborate, learn new skills, and engage with like-minded peers passionate about coding and technology.</p>
+              <p>Align on strategies, welcome new members, and review outstanding competitive achievements.</p>
             </article>
           </div>
         </div>
       </section>
 
+      <!-- Resources Section -->
       <section class="section">
         <div class="container">
           <p class="section-label">Practice & Resources</p>
           <h2>Explore platforms and learning resources to grow your skills</h2>
           <div class="resource-layout">
             <div class="resource-card">
-              <h3>Coding Platforms for Practice and Competition</h3>
+              <h3>Coding Platforms for Practice</h3>
               <ul class="resource-list">
-                <li><strong>Codeforces:</strong> Frequent contests, community discussions, and diverse problems for all levels.</li>
-                <li><strong>AtCoder:</strong> Japanese platform known for its well-crafted contests and beginner-friendly rounds.</li>
-                <li><strong>LeetCode:</strong> Excellent for algorithm practice, interview preparation, and contest participation.</li>
-                <li><strong>HackerRank:</strong> Offers challenges in algorithms, data structures, and domains like AI and databases.</li>
-                <li><strong>CodeChef:</strong> Regular contests and a vast problem archive, with a strong focus on learning.</li>
+                <li><strong>Codeforces:</strong> Best for rapid-fire contests, editorials, and diverse global rankings.</li>
+                <li><strong>AtCoder:</strong> Renowned for clean mathematical logic and high-quality, elegant problem sets.</li>
+                <li><strong>LeetCode:</strong> Essential for building general algorithm familiarity and technical interview prep.</li>
+                <li><strong>HackerRank:</strong> Excellent structured domain practice path for beginners.</li>
+                <li><strong>CodeChef:</strong> Host of national contests with a robust problem archive.</li>
               </ul>
             </div>
             <div class="resource-card">
-              <h3>Learning Resources</h3>
+              <h3>Recommended Resources</h3>
               <ul class="resource-list">
-                <li><strong>YouTube Channels:</strong> Many great channels dedicated to competitive programming tutorials, problem walkthroughs, and contest analysis.</li>
-                <li><strong>Live Streams:</strong> Platforms like Twitch and YouTube host live coding sessions and contest participation, which are great for learning strategies in real time.</li>
-                <li><strong>Official Platform Tutorials:</strong> Many coding platforms offer their own educational content and problem editorials for deeper understanding.</li>
+                <li><strong>YouTube Tutorials:</strong> Great video explanations of contest editorials and complex dynamic programming.</li>
+                <li><strong>Coding Streams:</strong> Watch high-rated competitive coders solve sets live to understand speed strategies.</li>
+                <li><strong>Platform Editorials:</strong> Review text solutions post-contest to study alternative optimizations.</li>
               </ul>
             </div>
           </div>
         </div>
       </section>
 
-      <section id="team" class="section">
+      <!-- Team Section -->
+      <section id="team" class="section alt-section">
         <div class="container">
-          <p class="section-label">Club Team</p>
-          <h2>Meet the people behind the club</h2>
+          <div style="text-align: center; margin-bottom: 3rem;">
+            <p class="section-label">Club Team</p>
+            <h2>Meet the people behind the club</h2>
+          </div>
           <div class="team-grid">
             <article class="team-card">
-              <h3>Faculty Coordinator</h3>
-              <p class="team-role">Guidance and support</p>
+              <span class="team-role">Faculty Coordinator</span>
+              <h3>Faculty Advisor</h3>
               <p>
-                The faculty coordinator provides academic guidance, encouragement, and support
-                to ensure the club continues to grow in a meaningful and impactful way.
+                Provides strategic guidance, university support, and academic mentorship to ensure the club's sustainable growth.
               </p>
             </article>
             <article class="team-card">
+              <span class="team-role">Leadership</span>
               <h3>Club Leads</h3>
-              <p class="team-role">Organizing and leading</p>
               <p>
-                The club leads oversee events, coordination, communication, and member engagement.
-                Their leadership keeps the club active and well-organized.
+                Manage events, schedule rounds, coordinate external activities, and drive member communication.
               </p>
             </article>
             <article class="team-card">
-              <h3>Mentors</h3>
-              <p class="team-role">Teaching and guiding</p>
+              <span class="team-role">Advisory</span>
+              <h3>Club Mentors</h3>
               <p>
-                Mentors share knowledge, offer guidance, and help members improve both their
-                technical and competitive programming skills.
+                Experienced competitors sharing algorithms insight, code review tips, and strategic test-solving methods.
               </p>
             </article>
           </div>
         </div>
       </section>
 
-      <section id="gallery" class="section alt-section">
+      <!-- Gallery Section -->
+      <section id="gallery" class="section">
         <div class="container">
           <p class="section-label">Event Gallery</p>
           <h2>Moments from past club events</h2>
-          <p>
-            The event gallery highlights the energy, learning, and collaboration that define the
-            ICPC Club. From coding practice sessions to competitions and workshops, each
-            image reflects our community spirit.
+          <p style="max-width: 600px; margin-bottom: 2rem;">
+            Capturing the spirit of collaboration, focus, and triumph in our local training rooms and official competition arenas.
           </p>
+          
           <div class="gallery-groups">
-            <article class="group-card" data-images="event4.jpeg" data-title="ICPC 2025">
+            <article class="group-card" data-images="images/event4.jpeg" data-title="ICPC 2025">
               <div class="group-thumb">
-                <img src="event4.jpeg" alt="ICPC 2025" />
+                <img src="images/event4.jpeg" alt="ICPC 2025" />
               </div>
               <div class="group-meta">
-                <h3>ICPC 2025</h3>
+                <div>
+                  <h3>ICPC 2025</h3>
+                  <p class="muted">Official regional contest round</p>
+                </div>
               </div>
             </article>
 
-            <article class="group-card" data-images="event1.jpeg,event2.jpeg,event3.jpeg" data-title="CodeSprint (Internal club members coding competition)">
+            <article class="group-card" data-images="images/event1.jpeg,images/event2.jpeg,images/event3.jpeg" data-title="CodeSprint">
               <div class="group-thumb">
-                <img src="event1.jpeg" alt="CodeSprint" />
+                <img src="images/event1.jpeg" alt="CodeSprint" />
               </div>
               <div class="group-meta">
                 <div>
@@ -257,19 +357,23 @@
               </div>
             </article>
 
-            <article class="group-card" data-images="event5.jpeg,event6.jpeg,event7.jpeg" data-title="ICPC 2026 Orientation Session">
+            <article class="group-card" data-images="images/event5.jpeg,images/event6.jpeg,images/event7.jpeg" data-title="ICPC 2026 Orientation">
               <div class="group-thumb">
-                <img src="event5.jpeg" alt="ICPC 2026 Orientation Session" />
+                <img src="images/event5.jpeg" alt="ICPC 2026 Orientation Session" />
               </div>
               <div class="group-meta">
-                <h3>ICPC 2026 Orientation Session</h3>
+                <div>
+                  <h3>ICPC 2026 Orientation</h3>
+                  <p class="muted">Orientation session for freshers</p>
+                </div>
               </div>
             </article>
           </div>
         </div>
       </section>
 
-      <section id="announcements" class="section">
+      <!-- Announcements Section -->
+      <section id="announcements" class="section alt-section">
         <div class="container">
           <p class="section-label">Announcements</p>
           <h2>Stay updated with the latest news</h2>
@@ -283,25 +387,33 @@
       </section>
     </main>
 
+    <!-- Wave canvas container (animated decoration) -->
+    <div id="wave-container">
+      <canvas id="wave-canvas" aria-hidden="true"></canvas>
+    </div>
+
+    <!-- Footer Section -->
     <footer id="contact" class="footer">
       <div class="container footer-content">
         <div>
           <p class="section-label">Contact</p>
-          <h2>Let’s connect</h2>
-          <p>We would love to hear from you. Whether you want to join the club or ask a question, feel free to reach out.</p>
+          <h2 style="margin-bottom: 1rem;">Let’s connect</h2>
+          <p>We are always eager to meet enthusiastic programmers. Have questions about our schedules, mentoring, or signups? Get in touch!</p>
         </div>
         <div class="contact-info">
           <p><strong>LinkedIn:</strong> <a href="https://www.linkedin.com/company/icpc-club-amrita-nagercoil/posts/?feedView=all" target="_blank" rel="noopener noreferrer">ICPC Club Amrita Nagercoil</a></p>
           <p><strong>Location:</strong> Amrita Vishwa Vidyapeetham Nagercoil</p>
         </div>
-      </div>      <div class="container footer-bottom">
+      </div>
+      <div class="container footer-bottom">
         <div class="footer-brand">
-          <img src="amrita-white.png" alt="Amrita logo" />
+          <img src="images/amrita-white.png" alt="Amrita logo" />
         </div>
         <div class="footer-copy">
           © Team ICPC 2007-2026. All Rights Reserved.
         </div>
-      </div>    </footer>
+      </div>
+    </footer>
 
     <!-- Lightbox modal -->
     <div id="lightbox" class="lightbox hidden" aria-hidden="true">

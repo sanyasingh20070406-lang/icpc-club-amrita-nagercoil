@@ -17,7 +17,7 @@ let pointerStart = null;
 let pointerDelta = 0;
 
 function buildCarousel(images, title, startIndex = 0) {
-  currentGroup = images.slice();
+  currentGroup = images.map(img => img.trim()).filter(Boolean);
   currentIndex = startIndex;
   carouselTrack.innerHTML = '';
   const slides = [];
@@ -46,7 +46,7 @@ function buildCarousel(images, title, startIndex = 0) {
   carouselTrack.style.transition = 'none';
   carouselTrack.style.transform = `translateX(${-(currentIndex + 1) * slideWidth}px)`;
   requestAnimationFrame(() => {
-    carouselTrack.style.transition = 'transform 0.45s ease';
+    carouselTrack.style.transition = 'transform 0.45s cubic-bezier(0.16, 1, 0.3, 1)';
   });
   lbCaption.textContent = `${title} (${currentIndex + 1} of ${currentGroup.length})`;
 }
@@ -55,16 +55,18 @@ function openLightbox(images, title, startIndex = 0) {
   buildCarousel(images, title, startIndex);
   lightbox.classList.remove('hidden');
   lightbox.setAttribute('aria-hidden', 'false');
+  document.body.style.overflow = 'hidden'; // Stop scrolling behind lightbox
 }
 
 function closeLightbox() {
   lightbox.classList.add('hidden');
   lightbox.setAttribute('aria-hidden', 'true');
   carouselTrack.innerHTML = '';
+  document.body.style.overflow = ''; // Re-enable scrolling
 }
 
 function updateCaption() {
-  const currentImage = carouselTrack.querySelector('.carousel-slide img');
+  const currentImage = carouselTrack.querySelectorAll('.carousel-slide img')[currentIndex + 1];
   const title = currentImage ? currentImage.alt.split(' - ')[0] : '';
   lbCaption.textContent = `${title} (${currentIndex + 1} of ${currentGroup.length})`;
 }
@@ -93,7 +95,7 @@ function attachCarouselListeners() {
       carouselTrack.style.transition = 'none';
       carouselTrack.style.transform = `translateX(${-(currentIndex + 1) * slideWidth}px)`;
       void carouselTrack.offsetWidth;
-      carouselTrack.style.transition = 'transform 0.45s ease';
+      carouselTrack.style.transition = 'transform 0.45s cubic-bezier(0.16, 1, 0.3, 1)';
     }
 
     if (currentIndex < 0) {
@@ -101,7 +103,7 @@ function attachCarouselListeners() {
       carouselTrack.style.transition = 'none';
       carouselTrack.style.transform = `translateX(${-(currentIndex + 1) * slideWidth}px)`;
       void carouselTrack.offsetWidth;
-      carouselTrack.style.transition = 'transform 0.45s ease';
+      carouselTrack.style.transition = 'transform 0.45s cubic-bezier(0.16, 1, 0.3, 1)';
     }
 
     updateCaption();
@@ -132,12 +134,12 @@ function attachCarouselListeners() {
   });
 
   window.addEventListener('resize', () => {
-    if (!carouselContainer) return;
+    if (!carouselContainer || lightbox.classList.contains('hidden')) return;
     slideWidth = carouselContainer.clientWidth;
     carouselTrack.style.transition = 'none';
     carouselTrack.style.transform = `translateX(${-(currentIndex + 1) * slideWidth}px)`;
     void carouselTrack.offsetWidth;
-    carouselTrack.style.transition = 'transform 0.45s ease';
+    carouselTrack.style.transition = 'transform 0.45s cubic-bezier(0.16, 1, 0.3, 1)';
   });
 
   carouselContainer.addEventListener('pointerdown', (e) => {
@@ -154,7 +156,7 @@ function attachCarouselListeners() {
 
   carouselContainer.addEventListener('pointerup', () => {
     if (pointerStart === null) return;
-    carouselTrack.style.transition = 'transform 0.45s ease';
+    carouselTrack.style.transition = 'transform 0.45s cubic-bezier(0.16, 1, 0.3, 1)';
     if (Math.abs(pointerDelta) > 60) {
       if (pointerDelta > 0) prevSlide(); else nextSlide();
     } else {
@@ -177,14 +179,29 @@ function init() {
   carouselTrack = document.querySelector('.carousel-track');
   carouselContainer = document.querySelector('.carousel');
 
+  const navbar = document.querySelector('.navbar');
+  if (navbar) {
+    const handleScroll = () => {
+      if (window.scrollY > 40) {
+        navbar.classList.add('scrolled');
+      } else {
+        navbar.classList.remove('scrolled');
+      }
+    };
+    window.addEventListener('scroll', handleScroll);
+    handleScroll();
+  }
+
   if (toggle && navLinks) {
     toggle.addEventListener('click', () => {
       navLinks.classList.toggle('active');
+      toggle.classList.toggle('active');
     });
 
     document.querySelectorAll('.nav-links a').forEach((link) => {
       link.addEventListener('click', () => {
         navLinks.classList.remove('active');
+        toggle.classList.remove('active');
       });
     });
   }
@@ -194,6 +211,40 @@ function init() {
   }
 
   attachCarouselListeners();
+  initAnimations();
+}
+
+function initAnimations() {
+  const animateElements = document.querySelectorAll('.card, .team-card, .motto-card, .resource-card, .group-card, .join-card, .section-label, h2, .split-layout p, .stats-panel, .hiring-panel, .hero-text > *');
+  
+  animateElements.forEach((el) => {
+    el.classList.add('scroll-animate');
+    
+    if (el.parentElement) {
+      if (['card-grid', 'team-grid', 'motto-grid', 'gallery-groups', 'hero-text'].some(c => el.parentElement.classList.contains(c))) {
+        const children = Array.from(el.parentElement.children);
+        const childIndex = children.indexOf(el);
+        if (childIndex === 1) el.classList.add('delay-100');
+        else if (childIndex === 2) el.classList.add('delay-200');
+        else if (childIndex === 3) el.classList.add('delay-300');
+        else if (childIndex >= 4) el.classList.add('delay-400');
+      }
+    }
+  });
+
+  const observer = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+      if (entry.isIntersecting) {
+        entry.target.classList.add('is-visible');
+        observer.unobserve(entry.target);
+      }
+    });
+  }, {
+    threshold: 0.1,
+    rootMargin: "0px 0px -50px 0px"
+  });
+
+  animateElements.forEach(el => observer.observe(el));
 }
 
 if (document.readyState === 'loading') {
@@ -202,7 +253,7 @@ if (document.readyState === 'loading') {
   init();
 }
 
-/* Wave canvas animation (lightweight sine waves) */
+/* Wave canvas animation (lightweight sine waves in official ICPC colors) */
 (function () {
   const canvas = document.getElementById('wave-canvas');
   if (!canvas) return;
@@ -212,10 +263,11 @@ if (document.readyState === 'loading') {
   let height = 0;
   let rafId = null;
 
+  // Tri-color waves matching Think (Red), Create (White), Solve (Blue)
   const waves = [
-    { amp: 18, len: 0.012, speed: 0.8, phase: 0, color: 'rgba(58,134,255,0.14)' },
-    { amp: 10, len: 0.01, speed: 0.6, phase: 50, color: 'rgba(76,201,240,0.10)' },
-    { amp: 6, len: 0.008, speed: 0.4, phase: 100, color: 'rgba(255,255,255,0.04)' }
+    { amp: 20, len: 0.010, speed: 0.6, phase: 0, color: 'rgba(255, 51, 102, 0.12)' },   // Crimson Red
+    { amp: 14, len: 0.008, speed: 0.4, phase: 60, color: 'rgba(255, 255, 255, 0.07)' },  // Frosted White
+    { amp: 10, len: 0.012, speed: 0.3, phase: 120, color: 'rgba(0, 82, 255, 0.1)' }     // Cyber Blue
   ];
 
   function resize() {

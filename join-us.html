@@ -3,29 +3,39 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Join Us - ICPC Club</title>
+    <title>Join Us - ICPC Club Amrita Nagercoil</title>
     <meta
       name="description"
-      content="Join Us page for ICPC Club Amrita Nagercoil. Share your Codeforces and LeetCode IDs and learn how to participate." 
+      content="Join the ICPC Club Amrita Nagercoil. Submit your programming IDs and kickstart your algorithmic journey." 
     />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link rel="stylesheet" href="styles.css" />
   </head>
   <body>
+    <div class="page-border" aria-hidden="true"></div>
+    <!-- Background Blur Orbs -->
+    <div class="glow-orb orb-red" aria-hidden="true"></div>
+    <div class="glow-orb orb-blue" aria-hidden="true"></div>
+    <div class="glow-orb orb-yellow" aria-hidden="true"></div>
+
     <header class="hero join-hero">
       <nav class="navbar">
-        <a class="edge-logo left" href="https://icpc.foundation" target="_blank" rel="noopener noreferrer">
-          <img src="icpc.webp" alt="ICPC Foundation linked club logo" class="edge-logo-img" />
-        </a>
-        <div class="brand-center">
-          <a class="brand" href="index.html">ICPC Club Amrita Nagercoil</a>
+        <div class="brand-wrapper">
+          <a class="edge-logo" href="https://icpc.foundation" target="_blank" rel="noopener noreferrer">
+            <img src="images/icpc.webp" alt="ICPC Foundation linked club logo" class="edge-logo-img" />
+          </a>
+          <a class="brand" href="index.html">ICPC Club <span>Amrita Nagercoil</span></a>
         </div>
       </nav>
+      
       <div class="hero-content" id="join-us">
         <div class="hero-text">
-          <p class="eyebrow">Join Us</p>
-          <h1>Become an active ICPC Club member</h1>
+          <p class="eyebrow"><span class="eyebrow-dot"></span>Registration</p>
+          <img src="images/icpc.webp" alt="ICPC Official Logo" class="hero-logo" />
+          <h1>Become an active <span class="text-grad-solve">ICPC Club</span> member</h1>
           <p class="hero-tagline">
-            Share your coding platform IDs, start regular practice, and join our events to grow with the community.
+            Share your coding profile details, establish regular practice habits, and collaborate with peers to scale new algorithmic heights.
           </p>
         </div>
       </div>
@@ -34,56 +44,75 @@
     <main>
       <section class="section">
         <div class="container join-container">
+          <!-- Glassmorphic Form Card -->
           <div class="join-card">
-            <h2>Sign up with your coding profiles</h2>
+            <h2 style="margin-bottom: 0.5rem;">Sign up with your profiles</h2>
             <p>
-              Enter your Codeforces and LeetCode IDs below so we can connect you with practice sessions,
-              contests, and club support.
+              Enter your Codeforces and LeetCode handles so we can connect you with structured practice matches, workshops, and team pairings.
             </p>
             <form action="#" method="get" class="join-form">
-              <label for="codeforces-id">Codeforces ID</label>
-              <input id="codeforces-id" name="codeforces-id" type="text" placeholder="Your Codeforces username" />
-              <label for="leetcode-id">LeetCode ID</label>
-              <input id="leetcode-id" name="leetcode-id" type="text" placeholder="Your LeetCode username" />
-              <button type="submit" class="btn btn-primary">Submit</button>
+              <div class="form-group">
+                <label for="codeforces-id">Codeforces Handle</label>
+                <input id="codeforces-id" name="codeforces-id" type="text" placeholder="Your Codeforces username" required />
+              </div>
+              <div class="form-group">
+                <label for="leetcode-id">LeetCode Handle</label>
+                <input id="leetcode-id" name="leetcode-id" type="text" placeholder="Your LeetCode username" required />
+              </div>
+              <button type="submit" class="btn btn-primary" style="margin-top: 1rem; width: 100%;">Submit handles</button>
             </form>
           </div>
 
+          <!-- Glassmorphic Info Card -->
           <div class="join-card">
-            <h2>How to get started</h2>
+            <h2 style="margin-bottom: 1.5rem;">How to get started</h2>
             <ol class="join-steps">
-              <li><strong>Enter your platform IDs.</strong> Use Codeforces and LeetCode usernames so we can track your progress and support you.</li>
-              <li><strong>Practice consistently.</strong> Solve problems regularly to build momentum and confidence.</li>
-              <li><strong>Join sessions.</strong> Attend practice rounds, mock contests, and workshops with the club.</li>
-              <li><strong>Stay motivated.</strong> Keep learning, ask questions, and celebrate small wins.</li>
+              <li>
+                <strong>Submit Your handles</strong>
+                <span>Provide your Codeforces and LeetCode usernames. This helps us gauge your activity and group you with comparable practice partners.</span>
+              </li>
+              <li>
+                <strong>Establish a streak</strong>
+                <span>Competitive programming requires daily rigor. Solve at least 1-2 problems daily to maintain analytical agility.</span>
+              </li>
+              <li>
+                <strong>Attend mock rounds</strong>
+                <span>Join our weekly simulated rounds to adapt to the speed and high pressure constraints of actual contest environments.</span>
+              </li>
+              <li>
+                <strong>Collaborate & Learn</strong>
+                <span>Participate in post-contest discussions. Reviewing editorial solutions from senior members is the fastest way to progress.</span>
+              </li>
             </ol>
-            <p>
-              Consistent problem solving is the best way to improve. The ICPC Club helps you stay active,
-              learn faster, and prepare for contests with a strong community behind you.
-            </p>
           </div>
         </div>
       </section>
     </main>
 
+    <!-- Footer Section -->
     <footer class="footer">
       <div class="container footer-content">
         <div>
           <p class="section-label">Contact</p>
-          <h2>Need help joining?</h2>
+          <h2 style="margin-bottom: 1rem;">Need assistance?</h2>
           <p>
-            Reach out on LinkedIn or visit the main site to learn more about practice sessions and events.
+            Have questions about registrations or getting set up on practice platforms? We are here to help you get started.
           </p>
+        </div>
+        <div class="contact-info">
+          <p><strong>LinkedIn:</strong> <a href="https://www.linkedin.com/company/icpc-club-amrita-nagercoil/posts/?feedView=all" target="_blank" rel="noopener noreferrer">ICPC Club Amrita Nagercoil</a></p>
+          <p><strong>Location:</strong> Amrita Vishwa Vidyapeetham Nagercoil</p>
         </div>
       </div>
       <div class="container footer-bottom">
         <div class="footer-brand">
-          <img src="amrita-white.png" alt="Amrita logo" />
+          <img src="images/amrita-white.png" alt="Amrita logo" />
         </div>
         <div class="footer-copy">
           © Team ICPC 2007-2026. All Rights Reserved.
         </div>
       </div>
     </footer>
+    <script src="script.js" defer></script>
   </body>
 </html>
