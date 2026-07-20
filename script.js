@@ -206,12 +206,13 @@ function init() {
     });
   }
 
+  initAnimations();
+
   if (!groupCards.length || !lightbox || !lbCaption || !lbPrev || !lbNext || !lbClose || !carouselTrack || !carouselContainer) {
     return;
   }
 
   attachCarouselListeners();
-  initAnimations();
 }
 
 function initAnimations() {
