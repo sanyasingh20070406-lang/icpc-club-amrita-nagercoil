@@ -215,7 +215,7 @@ function init() {
 }
 
 function initAnimations() {
-  const animateElements = document.querySelectorAll('.card, .team-card, .motto-card, .resource-card, .group-card, .join-card, .section-label, h2, .split-layout p, .stats-panel, .hiring-panel, .hero-text > *');
+  const animateElements = document.querySelectorAll('.card, .team-card, .motto-card, .resource-card, .group-card, .join-card, .section-label, h2, .split-layout p, .stats-panel, .hiring-panel, .hero-text > *, .timeline-item');
   
   animateElements.forEach((el) => {
     el.classList.add('scroll-animate');
