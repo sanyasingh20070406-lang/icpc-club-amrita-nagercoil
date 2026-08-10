@@ -52,10 +52,10 @@ function buildCarousel(images, title, startIndex = 0) {
 }
 
 function openLightbox(images, title, startIndex = 0) {
-  buildCarousel(images, title, startIndex);
   lightbox.classList.remove('hidden');
   lightbox.setAttribute('aria-hidden', 'false');
   document.body.style.overflow = 'hidden'; // Stop scrolling behind lightbox
+  buildCarousel(images, title, startIndex);
 }
 
 function closeLightbox() {
