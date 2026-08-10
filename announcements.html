@@ -3,10 +3,10 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Join Us - ICPC Club Amrita Nagercoil</title>
+    <title>Announcements - ICPC Club Amrita Nagercoil</title>
     <meta
       name="description"
-      content="Join the ICPC Club Amrita Nagercoil. Submit your programming IDs and kickstart your algorithmic journey." 
+      content="Stay updated with official news, upcoming contest dates, registration deadlines, and announcements from ICPC Club Amrita Nagercoil."
     />
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
@@ -18,7 +18,7 @@
     <div class="glow-orb orb-blue" aria-hidden="true"></div>
     <div class="glow-orb orb-yellow" aria-hidden="true"></div>
 
-    <header class="hero join-hero">
+    <header class="hero subpage-hero">
       <nav class="navbar">
         <div class="brand-wrapper">
           <a class="edge-logo" href="https://icpc.foundation" target="_blank" rel="noopener noreferrer">
@@ -34,7 +34,7 @@
           <a href="events.html">Events</a>
           <a href="team.html">Team</a>
           <a href="gallery.html">Gallery</a>
-          <a href="announcements.html">Announcements</a>
+          <a href="announcements.html" class="active">Announcements</a>
           <a href="contact.html">Contact</a>
         </div>
 
@@ -48,63 +48,45 @@
           <span></span>
         </button>
       </nav>
-      
-      <div class="hero-content" id="join-us">
-          <h1>Become an active <span class="text-grad-solve">ICPC Club</span> member</h1>
+
+      <div class="hero-content" id="announcements-hero">
+        <div class="hero-text">
+          <p class="eyebrow"><span class="eyebrow-dot"></span>NEWS & UPDATES</p>
+          <h1>Latest <span class="text-grad-think">Announcements</span></h1>
+          <p class="hero-tagline">
+            Stay updated with important contest schedules, workshop registrations, and club notices.
+          </p>
         </div>
       </div>
     </header>
 
     <main>
+      <!-- Announcements Section -->
       <section class="section">
-        <div class="container join-container">
-          <!-- Glassmorphic Form Card -->
-          <div class="join-card">
-            <h2 style="margin-bottom: 0.5rem;">Sign up with your profiles</h2>
-            <p>
-              Enter your Codeforces and LeetCode handles so we can connect you with structured practice matches, workshops, and team pairings.
-            </p>
-            <form action="#" method="get" class="join-form">
-              <div class="form-group">
-                <label for="codeforces-id">Codeforces Handle</label>
-                <input id="codeforces-id" name="codeforces-id" type="text" placeholder="Your Codeforces username" required />
-              </div>
-              <div class="form-group">
-                <label for="leetcode-id">LeetCode Handle</label>
-                <input id="leetcode-id" name="leetcode-id" type="text" placeholder="Your LeetCode username" required />
-              </div>
-              <button type="submit" class="btn btn-primary" style="margin-top: 1rem; width: 100%;">Submit handles</button>
-            </form>
+        <div class="container">
+          <div style="text-align: center; margin-bottom: 2rem;">
+            <p class="section-label">OFFICIAL NOTICES</p>
+            <h2>Stay updated with the latest news</h2>
           </div>
-
-          <!-- Glassmorphic Info Card -->
-          <div class="join-card">
-            <h2 style="margin-bottom: 1.5rem;">How to get started</h2>
-            <ol class="join-steps">
-              <li>
-                <strong>Submit Your handles</strong>
-                <span>Provide your Codeforces and LeetCode usernames. This helps us gauge your activity and group you with comparable practice partners.</span>
-              </li>
-              <li>
-                <strong>Establish a streak</strong>
-                <span>Competitive programming requires daily rigor. Solve at least 1-2 problems daily to maintain analytical agility.</span>
-              </li>
-              <li>
-                <strong>Attend mock rounds</strong>
-                <span>Join our weekly simulated rounds to adapt to the speed and high pressure constraints of actual contest environments.</span>
-              </li>
-              <li>
-                <strong>Collaborate & Learn</strong>
-                <span>Participate in post-contest discussions. Reviewing editorial solutions from senior members is the fastest way to progress.</span>
-              </li>
-            </ol>
-          </div>
+          <ul class="announcement-list">
+            <li><strong>REVDEBUG 2026</strong> event announced! Registration is open for all departments and years.</li>
+            <li>Registration for the next training session is now open.</li>
+            <li>Mock contest scheduled for this weekend.</li>
+            <li>New workshop on dynamic programming announced.</li>
+            <li>Team meeting reminder shared for all members.</li>
+            <li>Internal Codeforces ranklist updated for Q3 competitive track.</li>
+          </ul>
         </div>
       </section>
     </main>
 
+    <!-- Wave canvas container -->
+    <div id="wave-container">
+      <canvas id="wave-canvas" aria-hidden="true"></canvas>
+    </div>
+
     <!-- Footer Section -->
-    <footer id="contact" class="footer">
+    <footer class="footer">
       <div class="container footer-top">
         <div class="footer-brand">
           <div class="footer-logo-wrapper">
@@ -127,12 +109,12 @@
             <h4>Resources</h4>
             <a href="roadmap.html">Roadmap</a>
             <a href="why-join.html">Why Join</a>
-            <a href="announcements.html">Announcements</a>
+            <a href="announcements.html" class="active">Announcements</a>
             <a href="roadmap.html">Practice Path</a>
           </div>
           <div class="footer-col">
             <h4>Connect</h4>
-            <a href="join-us.html" class="active">Join Us</a>
+            <a href="join-us.html">Join Us</a>
             <a href="team.html">Team</a>
             <a href="contact.html">Contact Us</a>
           </div>
@@ -154,6 +136,7 @@
         </div>
       </div>
     </footer>
+
     <script src="script.js" defer></script>
   </body>
 </html>
