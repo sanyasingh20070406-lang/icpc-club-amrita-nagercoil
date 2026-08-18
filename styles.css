@@ -1,37 +1,37 @@
 @import url('https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&family=Plus+Jakarta+Sans:ital,wght@0,300;0,400;0,500;0,600;0,700;0,800;1,400&display=swap');
 
 :root {
-  /* Colors */
-  --bg-deep: #f5f7fb;                 /* Greyish White Backdrop */
-  --bg-surface: rgba(255, 255, 255, 0.7); /* Frosted White Glass */
+  /* Colors - Healthtech SaaS Theme */
+  --bg-deep: #F8FAFC;                 /* Clean Slate Backdrop */
+  --bg-surface: rgba(255, 255, 255, 0.9); /* Subtle Glass */
   --bg-surface-solid: #ffffff;
-  --bg-surface-soft: rgba(255, 255, 255, 0.85);
+  --bg-surface-soft: rgba(255, 255, 255, 0.95);
   
   /* Brand Accents */
-  --icpc-red: #ff1a53;    /* Crimson Reddish */
-  --icpc-blue: #0052ff;   /* Electric Cyber Blue */
-  --icpc-yellow: #475569; /* Slate grey contrast */
+  --icpc-red: #0D9488;    /* Teal/Emerald for health/growth */
+  --icpc-blue: #2563EB;   /* Deep Medical Trust Blue */
+  --icpc-yellow: #64748B; /* Slate grey contrast */
   
   /* Gradients */
-  --grad-think: linear-gradient(135deg, #ff1a53 0%, #ff5e85 100%);
-  --grad-create: linear-gradient(135deg, #475569 0%, #1e293b 100%);
-  --grad-solve: linear-gradient(135deg, #0052ff 0%, #00d2ff 100%);
-  --grad-full: linear-gradient(90deg, #ff1a53 0%, #0052ff 100%);
+  --grad-think: linear-gradient(135deg, #0D9488 0%, #14B8A6 100%);
+  --grad-create: linear-gradient(135deg, #334155 0%, #1E293B 100%);
+  --grad-solve: linear-gradient(135deg, #1D4ED8 0%, #3B82F6 100%);
+  --grad-full: linear-gradient(90deg, #0D9488 0%, #2563EB 100%);
   
-  --grad-text-think: linear-gradient(135deg, #ff1a53, #ff5e85);
-  --grad-text-create: linear-gradient(135deg, #0f172a, #475569);
-  --grad-text-solve: linear-gradient(135deg, #0052ff, #00a3ff);
+  --grad-text-think: linear-gradient(135deg, #0D9488, #14B8A6);
+  --grad-text-create: linear-gradient(135deg, #1E293B, #334155);
+  --grad-text-solve: linear-gradient(135deg, #1D4ED8, #3B82F6);
   
   /* Text */
-  --text-primary: #0f172a;            /* Charcoal Dark Slate */
+  --text-primary: #0F172A;            /* Charcoal Dark Slate */
   --text-secondary: #475569;          /* Slate Grey */
-  --text-muted: #94a3b8;
+  --text-muted: #94A3B8;
 
   /* Borders & Shadows */
-  --border: rgba(0, 0, 0, 0.05);
-  --border-hover: rgba(0, 0, 0, 0.12);
-  --glow-shadow-blue: 0 10px 30px rgba(0, 82, 255, 0.12);
-  --glow-shadow-red: 0 10px 30px rgba(255, 26, 83, 0.12);
+  --border: #E2E8F0;
+  --border-hover: #CBD5E1;
+  --glow-shadow-blue: 0 4px 6px -1px rgba(37, 99, 235, 0.1), 0 2px 4px -1px rgba(37, 99, 235, 0.06);
+  --glow-shadow-red: 0 4px 6px -1px rgba(13, 148, 136, 0.1), 0 2px 4px -1px rgba(13, 148, 136, 0.06);
 
   /* Transitions */
   --transition-smooth: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
@@ -80,8 +80,8 @@ body::after {
   left: 0;
   width: 100%;
   height: 100%;
-  background: radial-gradient(circle at 10% 15%, rgba(255, 26, 83, 0.03) 0%, transparent 40%),
-              radial-gradient(circle at 90% 45%, rgba(0, 82, 255, 0.03) 0%, transparent 45%),
+  background: radial-gradient(circle at 10% 15%, rgba(13, 148, 136, 0.03) 0%, transparent 40%),
+              radial-gradient(circle at 90% 45%, rgba(37, 99, 235, 0.03) 0%, transparent 45%),
               radial-gradient(circle at 50% 75%, rgba(0, 0, 0, 0.01) 0%, transparent 40%);
   pointer-events: none;
   z-index: -2;
@@ -126,7 +126,7 @@ a {
 .orb-yellow {
   bottom: 12%;
   left: 25%;
-  background: #0052ff;
+  background: var(--icpc-yellow);
   animation-duration: 24s;
   animation-delay: -10s;
 }
