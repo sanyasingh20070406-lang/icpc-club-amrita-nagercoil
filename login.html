@@ -3,15 +3,11 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Join Us - ICPC Club Amrita Nagercoil</title>
-    <meta
-      name="description"
-      content="Join the ICPC Club Amrita Nagercoil. Submit your programming IDs and kickstart your algorithmic journey." 
-    />
+    <title>Login - ICPC Club Amrita Nagercoil</title>
+    <meta name="description" content="Login to your ICPC Club account." />
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link rel="icon" type="image/webp" href="images/icpc.webp" />
-    <link rel="apple-touch-icon" href="images/icpc.webp" />
     <link rel="stylesheet" href="styles.css" />
   </head>
   <body>
@@ -41,7 +37,7 @@
         </div>
 
         <div class="nav-actions">
-          <a href="login.html" class="btn btn-join">Login</a>
+          <a href="join-us.html" class="btn btn-join">Join Us</a>
         </div>
 
         <button class="menu-toggle" aria-label="Toggle navigation">
@@ -51,9 +47,8 @@
         </button>
       </nav>
       
-      <div class="hero-content" id="join-us">
-          <h1>Become an active <span class="text-grad-solve">ICPC Club</span> member</h1>
-        </div>
+      <div class="hero-content" id="login">
+          <h1>Member <span class="text-grad-solve">Login</span></h1>
       </div>
     </header>
 
@@ -61,41 +56,26 @@
       <section class="section">
         <div class="container join-container">
           <!-- Glassmorphic Form Card -->
-          <div class="join-card">
-            <h2 style="margin-bottom: 0.5rem;">Sign up with your profiles</h2>
-            <p>
-              Enter your Codeforces handle so we can connect you with structured practice matches, workshops, and team pairings.
+          <div class="join-card" style="grid-column: 1 / -1; width: 100%; max-width: 500px; margin: 0 auto;">
+            <h2 style="margin-bottom: 0.5rem; text-align: center;">Welcome Back</h2>
+            <p style="text-align: center; margin-bottom: 2rem;">
+              Please enter your name and roll number to log in.
             </p>
-            <form action="#" method="get" class="join-form">
+            <form id="login-form" class="join-form">
               <div class="form-group">
-                <label for="codeforces-id">Codeforces Handle</label>
-                <input id="codeforces-id" name="codeforces-id" type="text" placeholder="Your Codeforces username" required />
+                <label for="member_name">Full Name</label>
+                <input id="member_name" name="member_name" type="text" placeholder="Your full name" required />
               </div>
-              <button type="submit" class="btn btn-primary" style="margin-top: 1rem; width: 100%;">Submit handle</button>
-            </form>
-          </div>
+              <div class="form-group">
+                <label for="roll_number">Roll Number</label>
+                <input id="roll_number" name="roll_number" type="text" placeholder="e.g. CB.EN.U4CYS22001" required />
+              </div>
 
-          <!-- Glassmorphic Info Card -->
-          <div class="join-card">
-            <h2 style="margin-bottom: 1.5rem;">How to get started</h2>
-            <ol class="join-steps">
-              <li>
-                <strong>Submit Your handle</strong>
-                <span>Provide your Codeforces username. This helps us gauge your activity and group you with comparable practice partners.</span>
-              </li>
-              <li>
-                <strong>Establish a streak</strong>
-                <span>Competitive programming requires daily rigor. Solve at least 1-2 problems daily to maintain analytical agility.</span>
-              </li>
-              <li>
-                <strong>Attend mock rounds</strong>
-                <span>Join our weekly simulated rounds to adapt to the speed and high pressure constraints of actual contest environments.</span>
-              </li>
-              <li>
-                <strong>Collaborate & Learn</strong>
-                <span>Participate in post-contest discussions. Reviewing editorial solutions from senior members is the fastest way to progress.</span>
-              </li>
-            </ol>
+              <!-- Status Message -->
+              <div id="login-status" style="margin-top: 1rem; text-align: center; font-weight: 600; display: none;"></div>
+
+              <button type="submit" id="login-btn" class="btn btn-primary" style="margin-top: 1.5rem; width: 100%;">Log In</button>
+            </form>
           </div>
         </div>
       </section>
@@ -130,7 +110,7 @@
           </div>
           <div class="footer-col">
             <h4>Connect</h4>
-            <a href="join-us.html" class="active">Join Us</a>
+            <a href="join-us.html">Join Us</a>
             <a href="team.html">Team</a>
             <a href="contact.html">Contact Us</a>
           </div>
@@ -152,6 +132,54 @@
         </div>
       </div>
     </footer>
+
+    <script>
+      // Temporary database of members (you can update this list with the students who are members)
+      const clubMembers = [
+        { name: "John Doe", rollNumber: "CB.EN.U4CYS22001" },
+        { name: "Jane Smith", rollNumber: "CB.EN.U4CYS22002" }
+        // Add more members here
+      ];
+
+      document.getElementById('login-form').addEventListener('submit', function(e) {
+        e.preventDefault();
+        
+        const btn = document.getElementById('login-btn');
+        const statusEl = document.getElementById('login-status');
+        
+        btn.textContent = 'Logging In...';
+        btn.disabled = true;
+        statusEl.style.display = 'none';
+
+        const enteredName = document.getElementById('member_name').value.trim().toLowerCase();
+        const enteredRollNumber = document.getElementById('roll_number').value.trim().toLowerCase();
+
+        // Check against our club database (case insensitive)
+        const isMember = clubMembers.find(member => 
+          member.name.toLowerCase() === enteredName && 
+          member.rollNumber.toLowerCase() === enteredRollNumber
+        );
+
+        setTimeout(() => { // Simulate a short delay
+          if (isMember) {
+            statusEl.style.display = 'block';
+            statusEl.style.color = '#0D9488'; // Teal success
+            statusEl.textContent = 'Login successful! Redirecting...';
+            
+            // Redirect to the dashboard page upon successful login
+            setTimeout(() => {
+              window.location.href = 'dashboard.html';
+            }, 1000);
+          } else {
+            statusEl.style.display = 'block';
+            statusEl.style.color = '#E11D48'; // Red error
+            statusEl.textContent = 'Invalid name or roll number. Access denied.';
+            btn.textContent = 'Log In';
+            btn.disabled = false;
+          }
+        }, 500);
+      });
+    </script>
     <script src="script.js" defer></script>
   </body>
 </html>
