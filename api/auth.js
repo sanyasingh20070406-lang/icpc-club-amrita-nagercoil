@@ -27,7 +27,8 @@ export default async function handler(req, res) {
         `SELECT u.id, u.club_member_id, u.admin_id, u.email, u.student_id, u.name, u.role, u.is_active,
                 COALESCE(cm.department, ar.department, 'N/A') as department,
                 COALESCE(cm.year, ar.year, 'N/A') as year,
-                cm.codeforces_handle
+                cm.codeforces_handle,
+                cm.address
          FROM users u
          LEFT JOIN club_members cm ON u.club_member_id = cm.id
          LEFT JOIN admin_roster ar ON u.admin_id = ar.id
@@ -41,6 +42,39 @@ export default async function handler(req, res) {
 
       return res.status(200).json(userRes.rows[0]);
     } catch (err) {
+      return res.status(401).json({ message: 'Invalid or expired token' });
+    }
+  }
+
+  // Handle POST /api/auth?action=update-profile
+  if (req.method === 'POST' && action === 'update-profile') {
+    const authHeader = req.headers.authorization;
+    if (!authHeader || !authHeader.startsWith('Bearer ')) {
+      return res.status(401).json({ message: 'Unauthorized: Missing token' });
+    }
+
+    const token = authHeader.split(' ')[1];
+    try {
+      const decoded = jwt.verify(token, JWT_SECRET);
+      const { address } = req.body;
+      
+      const userRes = await pool.query(
+        `SELECT club_member_id FROM users WHERE id = $1 AND is_active = TRUE`,
+        [decoded.id]
+      );
+
+      if (userRes.rows.length === 0 || !userRes.rows[0].club_member_id) {
+        return res.status(404).json({ message: 'User account or club member profile not found' });
+      }
+
+      await pool.query(
+        `UPDATE club_members SET address = $1 WHERE id = $2`,
+        [address, userRes.rows[0].club_member_id]
+      );
+
+      return res.status(200).json({ message: 'Profile updated successfully' });
+    } catch (err) {
+      console.error(err);
       return res.status(401).json({ message: 'Invalid or expired token' });
     }
   }

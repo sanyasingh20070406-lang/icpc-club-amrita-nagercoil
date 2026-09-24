@@ -140,6 +140,71 @@
     .badge-ongoing { background: rgba(13, 148, 136, 0.25); color: #2dd4bf; }
     .badge-completed { background: rgba(148, 163, 184, 0.2); color: #94a3b8; }
     .badge-cancelled { background: rgba(225, 29, 72, 0.2); color: #f43f5e; }
+    
+    .member-name-link {
+      color: #38bdf8;
+      font-weight: 700;
+      text-decoration: none;
+      cursor: pointer;
+      transition: all 0.2s ease;
+    }
+    .member-name-link:hover {
+      color: #2dd4bf;
+      text-decoration: underline;
+    }
+    .badge-low-att {
+      background: rgba(225, 29, 72, 0.25);
+      color: #f43f5e;
+      border: 1px solid rgba(225, 29, 72, 0.4);
+    }
+    .badge-good-att {
+      background: rgba(13, 148, 136, 0.25);
+      color: #2dd4bf;
+      border: 1px solid rgba(13, 148, 136, 0.4);
+    }
+    .badge-warning-att {
+      background: rgba(245, 158, 11, 0.25);
+      color: #fbbf24;
+      border: 1px solid rgba(245, 158, 11, 0.4);
+    }
+    .filter-bar {
+      background: rgba(15, 23, 42, 0.6);
+      border: 1px solid rgba(255, 255, 255, 0.12);
+      border-radius: 12px;
+      padding: 16px;
+      margin-top: 20px;
+      margin-bottom: 20px;
+      display: flex;
+      gap: 14px;
+      flex-wrap: wrap;
+      align-items: center;
+    }
+    .mp-modal-overlay {
+      display: none;
+      position: fixed;
+      inset: 0;
+      background: rgba(0, 0, 0, 0.75);
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+      z-index: 10000;
+      justify-content: center;
+      align-items: center;
+      padding: 20px;
+      overflow-y: auto;
+    }
+    .mp-modal-container {
+      width: 100%;
+      max-width: 800px;
+      max-height: 90vh;
+      overflow-y: auto;
+      background: rgba(15, 23, 42, 0.95);
+      border: 1px solid rgba(255, 255, 255, 0.15);
+      border-radius: 18px;
+      padding: 28px;
+      color: #fff;
+      box-shadow: 0 25px 50px rgba(0, 0, 0, 0.7);
+      position: relative;
+    }
   </style>
 </head>
 <body>
@@ -242,13 +307,57 @@
         </div>
       </div>
 
-      <h3 style="margin-top: 32px;">Approved Roster & Registration Status</h3>
+      <!-- Quick Attendance Overview Cards -->
+      <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 16px; margin-top: 32px;">
+        <div style="background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1); border-radius: 12px; padding: 16px; text-align: center;">
+          <div style="color: #94a3b8; font-size: 0.85rem;">Total Club Members</div>
+          <div id="roster-stat-total" style="font-size: 1.8rem; font-weight: 700; color: #38bdf8; margin-top: 4px;">0</div>
+        </div>
+        <div style="background: rgba(13,148,136,0.1); border: 1px solid rgba(13,148,136,0.3); border-radius: 12px; padding: 16px; text-align: center; cursor: pointer;" onclick="setAttendanceFilter('good')">
+          <div style="color: #2dd4bf; font-size: 0.85rem;">Good Standing (≥75%)</div>
+          <div id="roster-stat-good" style="font-size: 1.8rem; font-weight: 700; color: #2dd4bf; margin-top: 4px;">0</div>
+        </div>
+        <div style="background: rgba(225,29,72,0.1); border: 1px solid rgba(225,29,72,0.3); border-radius: 12px; padding: 16px; text-align: center; cursor: pointer;" onclick="setAttendanceFilter('low')">
+          <div style="color: #f43f5e; font-size: 0.85rem;">⚠️ Low Attendance (<75%)</div>
+          <div id="roster-stat-low" style="font-size: 1.8rem; font-weight: 700; color: #f43f5e; margin-top: 4px;">0</div>
+        </div>
+      </div>
+
+      <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 16px; margin-top: 32px; margin-bottom: 12px;">
+        <h3 style="margin: 0;">Approved Roster & Attendance Directory</h3>
+        <span style="font-size: 0.85rem; color: #0D9488;">💡 Click any member's name to view profile & attendance details</span>
+      </div>
+
+      <!-- Search & Low Attendance Filter Bar -->
+      <div class="filter-bar">
+        <div style="flex: 2; min-width: 240px;">
+          <input type="text" id="member-search-input" oninput="renderMembersRoster()" placeholder="🔍 Search member name, roll, email, or dept..." style="width: 100%; padding: 10px 14px; background: rgba(15, 23, 42, 0.9); border: 1px solid rgba(255,255,255,0.2); border-radius: 8px; color: #fff;" />
+        </div>
+        <div style="flex: 1.5; min-width: 200px;">
+          <select id="member-att-filter" onchange="renderMembersRoster()" style="width: 100%; padding: 10px 14px; background: rgba(15, 23, 42, 0.9); border: 1px solid rgba(255,255,255,0.2); border-radius: 8px; color: #fff;">
+            <option value="all">All Attendance Levels</option>
+            <option value="low75">⚠️ Low Attendance (< 75%)</option>
+            <option value="critical50">🚨 Critical Attendance (< 50%)</option>
+            <option value="good75">✅ Good Standing (≥ 75%)</option>
+            <option value="custom">⚙️ Custom Max Threshold</option>
+          </select>
+        </div>
+        <div id="custom-threshold-wrapper" style="display: none; align-items: center; gap: 8px;">
+          <span style="font-size: 0.85rem; color: #cbd5e1;">Max %:</span>
+          <input type="number" id="custom-threshold-input" value="75" min="0" max="100" oninput="renderMembersRoster()" style="width: 80px; padding: 8px 10px; background: rgba(15, 23, 42, 0.9); border: 1px solid #0D9488; border-radius: 8px; color: #fff;" />
+        </div>
+        <div>
+          <button onclick="resetMemberFilters()" class="btn btn-outline" style="padding: 8px 14px; font-size: 0.85rem;">Reset Filters</button>
+        </div>
+      </div>
+
       <table class="data-table">
         <thead>
           <tr>
-            <th>Name</th>
+            <th>Member Name</th>
             <th>Email / Roll</th>
             <th>Department</th>
+            <th>Attendance Rate</th>
             <th>Account Registered</th>
             <th>Status</th>
             <th>Action</th>
@@ -338,6 +447,7 @@
             <th>Roll Number</th>
             <th>Department</th>
             <th>Status</th>
+            <th>Reason for Absence</th>
             <th>Actions</th>
           </tr>
         </thead>
@@ -553,39 +663,147 @@
     }
 
     // --- MEMBERS MANAGEMENT ---
+    let cachedMembersList = [];
+    let currentProfileMemberId = null;
+
     async function loadMembersRoster() {
       try {
         const res = await fetch('/api/members', {
           headers: { 'Authorization': 'Bearer ' + token }
         });
         const members = await res.json();
-        const tbody = document.getElementById('members-tbody');
-        tbody.innerHTML = '';
-
         if (!Array.isArray(members)) return;
 
-        members.forEach(m => {
-          const isReg = m.is_registered;
-          const isActive = m.is_active;
+        cachedMembersList = members;
 
-          tbody.innerHTML += `
-            <tr>
-              <td><strong>${m.name}</strong><br><small style="color:#94a3b8;">CF: ${m.codeforces_handle || 'N/A'}</small></td>
-              <td>${m.email}<br><small style="color:#94a3b8;">${m.student_id}</small></td>
-              <td>${m.department || 'N/A'}<br><small style="color:#94a3b8;">${m.year || ''}</small></td>
-              <td>${isReg ? '<span class="badge badge-ongoing">Registered (' + m.user_role + ')</span>' : '<span class="badge badge-completed">Not Registered</span>'}</td>
-              <td>${isActive ? '<span style="color:#2dd4bf;">Active</span>' : '<span style="color:#f43f5e;">Deactivated</span>'}</td>
-              <td>
-                <button onclick="toggleMemberStatus(${m.id}, ${!isActive})" class="btn btn-outline" style="padding:4px 8px; font-size:11px;">
-                  ${isActive ? 'Deactivate' : 'Reactivate'}
-                </button>
-              </td>
-            </tr>
-          `;
-        });
+        // Summary stats
+        const total = members.length;
+        const good = members.filter(m => (m.attendance_percentage !== undefined ? m.attendance_percentage : 0) >= 75).length;
+        const low = members.filter(m => (m.attendance_percentage !== undefined ? m.attendance_percentage : 0) < 75).length;
+
+        const elTot = document.getElementById('roster-stat-total');
+        const elGood = document.getElementById('roster-stat-good');
+        const elLow = document.getElementById('roster-stat-low');
+
+        if (elTot) elTot.textContent = total;
+        if (elGood) elGood.textContent = good;
+        if (elLow) elLow.textContent = low;
+
+        renderMembersRoster();
       } catch (err) {
         console.error('Error loading members roster:', err);
       }
+    }
+
+    function setAttendanceFilter(type) {
+      const filterSelect = document.getElementById('member-att-filter');
+      if (filterSelect) {
+        if (type === 'good') filterSelect.value = 'good75';
+        else if (type === 'low') filterSelect.value = 'low75';
+        else filterSelect.value = 'all';
+        renderMembersRoster();
+      }
+    }
+
+    function resetMemberFilters() {
+      const sInput = document.getElementById('member-search-input');
+      const fSelect = document.getElementById('member-att-filter');
+      const cWrap = document.getElementById('custom-threshold-wrapper');
+      if (sInput) sInput.value = '';
+      if (fSelect) fSelect.value = 'all';
+      if (cWrap) cWrap.style.display = 'none';
+      renderMembersRoster();
+    }
+
+    function renderMembersRoster() {
+      const tbody = document.getElementById('members-tbody');
+      if (!tbody) return;
+      tbody.innerHTML = '';
+
+      const searchQuery = (document.getElementById('member-search-input')?.value || '').toLowerCase().trim();
+      const filterType = document.getElementById('member-att-filter')?.value || 'all';
+      const customWrapper = document.getElementById('custom-threshold-wrapper');
+
+      if (customWrapper) {
+        customWrapper.style.display = filterType === 'custom' ? 'flex' : 'none';
+      }
+
+      let customVal = parseInt(document.getElementById('custom-threshold-input')?.value || '75', 10);
+      if (isNaN(customVal)) customVal = 75;
+
+      const filtered = cachedMembersList.filter(m => {
+        if (searchQuery) {
+          const nameMatch = m.name && m.name.toLowerCase().includes(searchQuery);
+          const rollMatch = m.student_id && m.student_id.toLowerCase().includes(searchQuery);
+          const emailMatch = m.email && m.email.toLowerCase().includes(searchQuery);
+          const deptMatch = m.department && m.department.toLowerCase().includes(searchQuery);
+          if (!nameMatch && !rollMatch && !emailMatch && !deptMatch) return false;
+        }
+
+        const pct = m.attendance_percentage !== undefined ? m.attendance_percentage : 0;
+
+        if (filterType === 'low75') return pct < 75;
+        if (filterType === 'critical50') return pct < 50;
+        if (filterType === 'good75') return pct >= 75;
+        if (filterType === 'custom') return pct < customVal;
+
+        return true;
+      });
+
+      if (filtered.length === 0) {
+        tbody.innerHTML = `<tr><td colspan="7" style="text-align: center; color: #94a3b8; padding: 20px;">No members found matching selected filters.</td></tr>`;
+        return;
+      }
+
+      filtered.forEach(m => {
+        const isReg = m.is_registered;
+        const isActive = m.is_active;
+        const pct = m.attendance_percentage !== undefined ? m.attendance_percentage : 0;
+        const pres = m.present_count || 0;
+        const tot = m.total_sessions || 0;
+
+        let attBadgeClass = 'badge-good-att';
+        let attBadgeText = `${pct}% (${pres}/${tot})`;
+
+        if (tot === 0) {
+          attBadgeClass = 'badge-completed';
+          attBadgeText = 'No sessions yet';
+        } else if (pct < 50) {
+          attBadgeClass = 'badge-low-att';
+          attBadgeText = `${pct}% LOW 🚨`;
+        } else if (pct < 75) {
+          attBadgeClass = 'badge-warning-att';
+          attBadgeText = `${pct}% LOW ⚠️`;
+        }
+
+        tbody.innerHTML += `
+          <tr>
+            <td>
+              <a href="javascript:void(0)" onclick="openMemberProfileModal(${m.id})" class="member-name-link" title="Click to view full profile & attendance log">
+                <strong>${m.name}</strong>
+              </a>
+              <br><small style="color:#94a3b8;">CF: ${m.codeforces_handle ? `<a href="https://codeforces.com/profile/${m.codeforces_handle}" target="_blank" style="color:#38bdf8;">${m.codeforces_handle}</a>` : 'N/A'}</small>
+            </td>
+            <td>${m.email}<br><small style="color:#94a3b8;">${m.student_id}</small></td>
+            <td>${m.department || 'N/A'}<br><small style="color:#94a3b8;">${m.year || ''}</small></td>
+            <td>
+              <span class="badge ${attBadgeClass}" onclick="openMemberProfileModal(${m.id})" style="cursor: pointer;" title="Click to view full attendance history">
+                ${attBadgeText}
+              </span>
+            </td>
+            <td>${isReg ? '<span class="badge badge-ongoing">Registered (' + m.user_role + ')</span>' : '<span class="badge badge-completed">Not Registered</span>'}</td>
+            <td>${isActive ? '<span style="color:#2dd4bf; font-weight:600;">Active</span>' : '<span style="color:#f43f5e; font-weight:600;">Deactivated</span>'}</td>
+            <td>
+              <button onclick="openMemberProfileModal(${m.id})" class="btn btn-outline" style="padding:4px 8px; font-size:11px; margin-right:4px; border-color:#0D9488; color:#0D9488;">
+                Profile
+              </button>
+              <button onclick="toggleMemberStatus(${m.id}, ${!isActive})" class="btn btn-outline" style="padding:4px 8px; font-size:11px;">
+                ${isActive ? 'Deactivate' : 'Reactivate'}
+              </button>
+            </td>
+          </tr>
+        `;
+      });
     }
 
     document.getElementById('add-member-form').addEventListener('submit', async (e) => {
@@ -811,7 +1029,7 @@
         const attMap = {};
         if (Array.isArray(attendanceList)) {
           attendanceList.forEach(a => {
-            attMap[a.club_member_id] = a.status;
+            attMap[a.club_member_id] = { status: a.status, reason: a.reason || '' };
           });
         }
 
@@ -850,21 +1068,32 @@
       });
 
       if (filtered.length === 0) {
-        tbody.innerHTML = `<tr><td colspan="5" style="text-align: center; color: #94a3b8; padding: 20px;">No members found matching "${searchQuery}"</td></tr>`;
+        tbody.innerHTML = `<tr><td colspan="6" style="text-align: center; color: #94a3b8; padding: 20px;">No members found matching "${searchQuery}"</td></tr>`;
         return;
       }
 
       filtered.forEach(m => {
-        const currentStatus = (attMap[m.id] || 'ABSENT').toUpperCase();
+        const attRecord = attMap[m.id];
+        const currentStatus = (typeof attRecord === 'object' ? attRecord.status : (attRecord || 'ABSENT')).toUpperCase();
+        const currentReason = typeof attRecord === 'object' ? (attRecord.reason || '') : '';
         const isPresent = currentStatus === 'PRESENT';
+        const pct = m.attendance_percentage !== undefined ? m.attendance_percentage : 0;
 
         tbody.innerHTML += `
           <tr>
-            <td><strong>${m.name}</strong></td>
+            <td>
+              <a href="javascript:void(0)" onclick="openMemberProfileModal(${m.id})" class="member-name-link" title="Click to view full profile & attendance log">
+                <strong>${m.name}</strong>
+              </a>
+              <br><span style="font-size:0.75rem; color:${pct < 75 ? '#f43f5e' : '#2dd4bf'}; font-weight:600;">Overall: ${pct}%</span>
+            </td>
             <td><code style="color: #38bdf8;">${m.student_id}</code></td>
             <td>${m.department || 'N/A'}</td>
             <td id="att-status-${m.id}" style="color: ${isPresent ? '#2dd4bf' : '#f43f5e'}; font-weight:700;">
               ${sessionId ? currentStatus : 'NO SESSION SELECTED'}
+            </td>
+            <td>
+              <input type="text" id="att-reason-${m.id}" placeholder="${isPresent ? 'N/A (Present)' : 'Reason for absence...'}" value="${currentReason}" ${isPresent ? 'disabled' : ''} onchange="saveAttendanceReason(${sessionId || 'null'}, ${m.id})" style="width: 100%; min-width: 180px; padding: 6px 10px; background: rgba(15, 23, 42, 0.7); border: 1px solid ${isPresent ? 'rgba(255,255,255,0.1)' : 'rgba(244,63,94,0.4)'}; border-radius: 6px; color: ${isPresent ? '#64748b' : '#fff'}; font-size: 0.85rem;" />
             </td>
             <td>
               <button onclick="markMemberAttendance(${sessionId || 'null'}, ${m.id}, 'PRESENT')" class="btn btn-outline" style="padding: 5px 12px; font-size: 11px; margin-right: 4px; ${isPresent && sessionId ? 'background: #0D9488; border-color: #0D9488; color: #fff; font-weight: bold;' : 'color: #cbd5e1;'}">Present</button>
@@ -875,11 +1104,27 @@
       });
     }
 
-    window.markMemberAttendance = async function(sessionId, memberId, status) {
+    window.saveAttendanceReason = async function(sessionId, memberId) {
+      const attRecord = currentAttendanceData && currentAttendanceData.attMap && currentAttendanceData.attMap[memberId];
+      const currentStatus = (typeof attRecord === 'object' ? attRecord.status : (attRecord || 'ABSENT')).toUpperCase();
+      if (currentStatus === 'ABSENT') {
+        const reasonInput = document.getElementById(`att-reason-${memberId}`);
+        const reasonVal = reasonInput ? reasonInput.value.trim() : '';
+        await window.markMemberAttendance(sessionId, memberId, 'ABSENT', reasonVal);
+      }
+    };
+
+    window.markMemberAttendance = async function(sessionId, memberId, status, customReason) {
       const activeSessionId = sessionId || document.getElementById('attendance-session-select')?.value;
       if (!activeSessionId) {
         alert('Please select a session from the dropdown above before marking attendance.');
         return;
+      }
+
+      const reasonInput = document.getElementById(`att-reason-${memberId}`);
+      let reasonVal = customReason !== undefined ? customReason : (reasonInput ? reasonInput.value.trim() : '');
+      if (status === 'PRESENT') {
+        reasonVal = '';
       }
 
       try {
@@ -889,11 +1134,11 @@
             'Content-Type': 'application/json',
             'Authorization': 'Bearer ' + token
           },
-          body: JSON.stringify({ session_id: activeSessionId, club_member_id: memberId, status })
+          body: JSON.stringify({ session_id: activeSessionId, club_member_id: memberId, status, reason: reasonVal })
         });
         if (res.ok) {
           if (currentAttendanceData && currentAttendanceData.attMap) {
-            currentAttendanceData.attMap[memberId] = status;
+            currentAttendanceData.attMap[memberId] = { status, reason: reasonVal };
           }
           renderAttendanceTable();
         } else {
@@ -1073,6 +1318,162 @@
       }
     };
 
+    // --- MEMBER PROFILE MODAL FUNCTIONS ---
+    async function openMemberProfileModal(memberId) {
+      currentProfileMemberId = memberId;
+      const modal = document.getElementById('member-profile-modal');
+      if (!modal) return;
+
+      modal.style.display = 'flex';
+
+      document.getElementById('mp-name').textContent = 'Loading member profile...';
+      document.getElementById('mp-avatar').textContent = '?';
+      document.getElementById('mp-roll').textContent = '...';
+      document.getElementById('mp-email').textContent = '...';
+      document.getElementById('mp-dept').textContent = '...';
+      document.getElementById('mp-year').textContent = '...';
+      document.getElementById('mp-cf').textContent = '...';
+      document.getElementById('mp-cf').href = '#';
+      document.getElementById('mp-rate-val').textContent = '...';
+      document.getElementById('mp-present-val').textContent = '...';
+      document.getElementById('mp-absent-val').textContent = '...';
+      document.getElementById('mp-total-val').textContent = '...';
+      document.getElementById('mp-alert-banner').style.display = 'none';
+
+      const tbody = document.getElementById('mp-history-tbody');
+      tbody.innerHTML = '<tr><td colspan="5" style="text-align:center; color:#94a3b8; padding: 16px;">Loading attendance log...</td></tr>';
+
+      try {
+        const res = await fetch(`/api/attendance?member_id=${memberId}`, {
+          headers: { 'Authorization': 'Bearer ' + token }
+        });
+        if (!res.ok) {
+          alert('Failed to fetch member details');
+          closeMemberProfileModal();
+          return;
+        }
+
+        const data = await res.json();
+        const m = data.member;
+        const total = data.total_sessions;
+        const present = data.present_count;
+        const absent = data.absent_count;
+        const pct = data.attendance_percentage;
+        const history = data.history || [];
+
+        document.getElementById('mp-name').textContent = m.name;
+        document.getElementById('mp-avatar').textContent = m.name ? m.name.charAt(0).toUpperCase() : '?';
+        document.getElementById('mp-roll').textContent = m.student_id;
+        document.getElementById('mp-email').textContent = m.email;
+        document.getElementById('mp-dept').textContent = m.department || 'N/A';
+        document.getElementById('mp-year').textContent = m.year || 'N/A';
+
+        if (m.codeforces_handle) {
+          document.getElementById('mp-cf').textContent = m.codeforces_handle;
+          document.getElementById('mp-cf').href = `https://codeforces.com/profile/${m.codeforces_handle}`;
+        } else {
+          document.getElementById('mp-cf').textContent = 'Not set';
+          document.getElementById('mp-cf').href = '#';
+        }
+
+        const stBadge = document.getElementById('mp-status-badge');
+        stBadge.textContent = m.is_active ? 'ACTIVE' : 'DEACTIVATED';
+        stBadge.style.background = m.is_active ? 'rgba(13,148,136,0.2)' : 'rgba(225,29,72,0.2)';
+        stBadge.style.color = m.is_active ? '#2dd4bf' : '#f43f5e';
+
+        const roleBadge = document.getElementById('mp-role-badge');
+        roleBadge.textContent = m.is_registered ? `REGISTERED (${m.user_role})` : 'NOT REGISTERED';
+
+        const rateEl = document.getElementById('mp-rate-val');
+        rateEl.textContent = `${pct}%`;
+        rateEl.style.color = total === 0 ? '#94a3b8' : (pct >= 75 ? '#2dd4bf' : (pct >= 50 ? '#fbbf24' : '#f43f5e'));
+
+        document.getElementById('mp-present-val').textContent = present;
+        document.getElementById('mp-absent-val').textContent = absent;
+        document.getElementById('mp-total-val').textContent = total;
+
+        const alertBanner = document.getElementById('mp-alert-banner');
+        if (total > 0 && pct < 75) {
+          alertBanner.style.display = 'flex';
+          document.getElementById('mp-alert-percentage').textContent = `${pct}%`;
+        } else {
+          alertBanner.style.display = 'none';
+        }
+
+        document.getElementById('mp-email-btn').href = `mailto:${m.email}`;
+        const toggleBtn = document.getElementById('mp-toggle-status-btn');
+        toggleBtn.textContent = m.is_active ? 'Deactivate Member' : 'Reactivate Member';
+        toggleBtn.onclick = async () => {
+          await toggleMemberStatus(m.id, !m.is_active);
+          openMemberProfileModal(m.id);
+        };
+
+        document.getElementById('mp-history-count').textContent = `${history.length} sessions recorded`;
+        tbody.innerHTML = '';
+
+        if (history.length === 0) {
+          tbody.innerHTML = `<tr><td colspan="5" style="text-align:center; color:#94a3b8; padding: 16px;">No attendance history logged for this member yet.</td></tr>`;
+        } else {
+          history.forEach(h => {
+            const isP = h.status.toUpperCase() === 'PRESENT';
+            const dateStr = new Date(h.start_time).toLocaleDateString();
+            tbody.innerHTML += `
+              <tr>
+                <td><strong>${h.session_title}</strong><br><small style="color:#94a3b8;">${h.session_type}</small></td>
+                <td>${dateStr}</td>
+                <td><span class="badge ${isP ? 'badge-good-att' : 'badge-low-att'}">${h.status}</span></td>
+                <td>
+                  <input type="text" id="mp-reason-${h.session_id}" value="${h.reason || ''}" placeholder="${isP ? 'N/A' : 'Enter absence reason...'}" ${isP ? 'disabled' : ''} style="padding:4px 8px; font-size:0.8rem; background:rgba(0,0,0,0.3); border:1px solid rgba(255,255,255,0.1); border-radius:4px; color:#fff; width:100%;" onchange="updateModalReason(${h.session_id}, ${m.id})" />
+                </td>
+                <td>
+                  <button onclick="toggleAttendanceFromModal(${h.session_id}, ${m.id}, '${isP ? 'ABSENT' : 'PRESENT'}')" class="btn btn-outline" style="padding:3px 8px; font-size:10px; ${isP ? 'color:#f43f5e; border-color:#f43f5e;' : 'color:#2dd4bf; border-color:#2dd4bf;'}">
+                    Mark ${isP ? 'Absent' : 'Present'}
+                  </button>
+                </td>
+              </tr>
+            `;
+          });
+        }
+
+      } catch (err) {
+        console.error('Error in openMemberProfileModal:', err);
+      }
+    }
+
+    function closeMemberProfileModal() {
+      const modal = document.getElementById('member-profile-modal');
+      if (modal) modal.style.display = 'none';
+    }
+
+    async function updateModalReason(sessionId, memberId) {
+      const input = document.getElementById(`mp-reason-${sessionId}`);
+      if (!input) return;
+      const reasonVal = input.value.trim();
+      await markMemberAttendance(sessionId, memberId, 'ABSENT', reasonVal);
+    }
+
+    async function toggleAttendanceFromModal(sessionId, memberId, newStatus) {
+      const input = document.getElementById(`mp-reason-${sessionId}`);
+      const reasonVal = input ? input.value.trim() : '';
+      await markMemberAttendance(sessionId, memberId, newStatus, reasonVal);
+      await openMemberProfileModal(memberId);
+      loadMembersRoster();
+    }
+
+    // Close profile modal on ESC key or clicking background overlay
+    window.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape') closeMemberProfileModal();
+    });
+
+    document.addEventListener('DOMContentLoaded', () => {
+      const modal = document.getElementById('member-profile-modal');
+      if (modal) {
+        modal.addEventListener('click', (e) => {
+          if (e.target === modal) closeMemberProfileModal();
+        });
+      }
+    });
+
     // Verify admin authentication and load initial stats
     verifyAdminAuth().then(isAuth => {
       if (isAuth) {
@@ -1080,5 +1481,93 @@
       }
     });
   </script>
+
+  <!-- Member Profile & Attendance Modal -->
+  <div id="member-profile-modal" class="mp-modal-overlay" aria-hidden="true">
+    <div class="mp-modal-container">
+      <span class="close-modal" onclick="closeMemberProfileModal()" style="position: absolute; top: 16px; right: 20px; font-size: 28px; cursor: pointer; color: #94a3b8;">&times;</span>
+      
+      <!-- Profile Header -->
+      <div style="display: flex; gap: 20px; align-items: center; padding-bottom: 20px; border-bottom: 1px solid rgba(255,255,255,0.1); flex-wrap: wrap;">
+        <div id="mp-avatar" style="width: 64px; height: 64px; border-radius: 50%; background: linear-gradient(135deg, #0D9488, #2563EB); display: flex; align-items: center; justify-content: center; font-size: 1.8rem; font-weight: 700; color: #fff; box-shadow: 0 4px 12px rgba(13, 148, 136, 0.4);">
+          ?
+        </div>
+        <div style="flex: 1; min-width: 240px;">
+          <div style="display: flex; align-items: center; gap: 10px; flex-wrap: wrap;">
+            <h2 id="mp-name" style="margin: 0; font-size: 1.5rem; color: #fff;">Member Name</h2>
+            <span id="mp-status-badge" class="badge" style="background: rgba(13,148,136,0.2); color: #2dd4bf;">ACTIVE</span>
+            <span id="mp-role-badge" class="badge" style="background: rgba(56,189,248,0.2); color: #38bdf8;">MEMBER</span>
+          </div>
+          <p style="color: #94a3b8; margin-top: 4px; font-size: 0.9rem;">
+            Roll: <strong id="mp-roll" style="color: #cbd5e1;">-</strong> | Email: <strong id="mp-email" style="color: #cbd5e1;">-</strong>
+          </p>
+          <p style="color: #94a3b8; margin-top: 2px; font-size: 0.85rem;">
+            Dept: <span id="mp-dept" style="color: #e2e8f0;">-</span> | Batch: <span id="mp-year" style="color: #e2e8f0;">-</span> | Codeforces: <a id="mp-cf" href="#" target="_blank" style="color: #38bdf8; text-decoration: underline;">-</a>
+          </p>
+        </div>
+      </div>
+
+      <!-- Low Attendance Alert Banner -->
+      <div id="mp-alert-banner" style="display: none; margin-top: 16px; padding: 12px 16px; background: rgba(225, 29, 72, 0.15); border: 1px solid rgba(225, 29, 72, 0.4); border-radius: 10px; color: #f43f5e; font-size: 0.9rem; align-items: center; gap: 10px;">
+        <span style="font-size: 1.3rem;">⚠️</span>
+        <div>
+          <strong>Low Attendance Alert:</strong> This member has <span id="mp-alert-percentage" style="font-weight:700;">0%</span> attendance rate, which is below the mandatory 75% threshold.
+        </div>
+      </div>
+
+      <!-- Attendance Stats Cards Grid -->
+      <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(130px, 1fr)); gap: 12px; margin-top: 20px;">
+        <div style="background: rgba(255,255,255,0.05); padding: 14px; border-radius: 10px; text-align: center; border: 1px solid rgba(255,255,255,0.08);">
+          <div style="font-size: 0.8rem; color: #94a3b8;">Attendance Rate</div>
+          <div id="mp-rate-val" style="font-size: 1.6rem; font-weight: 700; color: #0D9488; margin-top: 4px;">0%</div>
+        </div>
+        <div style="background: rgba(255,255,255,0.05); padding: 14px; border-radius: 10px; text-align: center; border: 1px solid rgba(255,255,255,0.08);">
+          <div style="font-size: 0.8rem; color: #94a3b8;">Attended (Present)</div>
+          <div id="mp-present-val" style="font-size: 1.6rem; font-weight: 700; color: #2dd4bf; margin-top: 4px;">0</div>
+        </div>
+        <div style="background: rgba(255,255,255,0.05); padding: 14px; border-radius: 10px; text-align: center; border: 1px solid rgba(255,255,255,0.08);">
+          <div style="font-size: 0.8rem; color: #94a3b8;">Missed (Absent)</div>
+          <div id="mp-absent-val" style="font-size: 1.6rem; font-weight: 700; color: #f43f5e; margin-top: 4px;">0</div>
+        </div>
+        <div style="background: rgba(255,255,255,0.05); padding: 14px; border-radius: 10px; text-align: center; border: 1px solid rgba(255,255,255,0.08);">
+          <div style="font-size: 0.8rem; color: #94a3b8;">Total Sessions</div>
+          <div id="mp-total-val" style="font-size: 1.6rem; font-weight: 700; color: #38bdf8; margin-top: 4px;">0</div>
+        </div>
+      </div>
+
+      <!-- Attendance History Log -->
+      <div style="margin-top: 24px;">
+        <h3 style="font-size: 1.1rem; margin-bottom: 12px; display: flex; justify-content: space-between; align-items: center;">
+          <span>Complete Attendance History</span>
+          <small id="mp-history-count" style="color: #94a3b8; font-weight: normal; font-size: 0.85rem;">0 sessions recorded</small>
+        </h3>
+        <div style="max-height: 260px; overflow-y: auto; border: 1px solid rgba(255,255,255,0.1); border-radius: 8px;">
+          <table class="data-table" style="margin-top: 0;">
+            <thead>
+              <tr>
+                <th>Session Title</th>
+                <th>Date</th>
+                <th>Status</th>
+                <th>Absence Reason</th>
+                <th>Action</th>
+              </tr>
+            </thead>
+            <tbody id="mp-history-tbody">
+              <tr><td colspan="5" style="text-align:center; color:#94a3b8; padding: 16px;">Loading...</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- Modal Footer -->
+      <div style="margin-top: 24px; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px; border-top: 1px solid rgba(255,255,255,0.1); padding-top: 16px;">
+        <div style="display: flex; gap: 8px;">
+          <a id="mp-email-btn" href="#" class="btn btn-outline" style="padding: 6px 14px; font-size: 0.85rem; color: #38bdf8; border-color: #38bdf8;">📧 Email Member</a>
+          <button id="mp-toggle-status-btn" class="btn btn-outline" style="padding: 6px 14px; font-size: 0.85rem; color: #f43f5e; border-color: #f43f5e;">Toggle Status</button>
+        </div>
+        <button onclick="closeMemberProfileModal()" class="btn btn-primary" style="padding: 6px 18px; font-size: 0.85rem;">Close Profile</button>
+      </div>
+    </div>
+  </div>
 </body>
 </html>

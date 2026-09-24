@@ -48,11 +48,13 @@ async function initDB() {
         department VARCHAR(255),
         year VARCHAR(50),
         codeforces_handle VARCHAR(255),
+        address TEXT,
         is_active BOOLEAN DEFAULT TRUE,
         created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
         updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
       );
     `);
+    await pool.query(`ALTER TABLE club_members ADD COLUMN IF NOT EXISTS address TEXT;`);
 
     // 3. Create users table
     await pool.query(`
@@ -101,11 +103,13 @@ async function initDB() {
         session_id INTEGER REFERENCES sessions(id) ON DELETE CASCADE,
         club_member_id INTEGER REFERENCES club_members(id) ON DELETE CASCADE,
         status VARCHAR(50) DEFAULT 'PRESENT',
+        reason TEXT,
         marked_by INTEGER REFERENCES users(id) ON DELETE SET NULL,
         marked_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
         UNIQUE(session_id, club_member_id)
       );
     `);
+    await pool.query(`ALTER TABLE attendance ADD COLUMN IF NOT EXISTS reason TEXT;`);
 
     // 6. Create announcements table
     await pool.query(`
@@ -309,6 +313,152 @@ async function initDB() {
          VALUES ('Beginner Friendly Online CP Session Today (18:00 - 19:00)', 'Join us today, Friday 28/08/26 from 18:00 to 19:00 IST for an interactive Beginner Friendly Online CP Session.', 'SESSION', CURRENT_TIMESTAMP)`
       );
     }
+
+    // 11. Seed Weekly Session - 2 and its 103 attendees
+    console.log('Seeding Weekly Session - 2 attendance records...');
+    let sess2Res = await pool.query(`SELECT id FROM sessions WHERE LOWER(title) LIKE '%weekly session%2%' OR LOWER(title) LIKE '%cp session%2%' OR LOWER(title) LIKE '%session - 2%' OR LOWER(title) LIKE '%session #2%' ORDER BY id ASC`);
+    let sess2Id;
+    if (sess2Res.rows.length === 0) {
+      const newSess2 = await pool.query(`
+        INSERT INTO sessions (title, description, session_type, start_time, end_time, location, status)
+        VALUES ('Weekly Session - 2', 'Weekly Competitive Programming Session #2 covering algorithm design, dynamic programming, and Codeforces problem solving.', 'WORKSHOP', '2026-09-12T10:00:00.000Z', '2026-09-12T12:00:00.000Z', 'Lab 3 & Main Hall', 'COMPLETED')
+        RETURNING id
+      `);
+      sess2Id = newSess2.rows[0].id;
+    } else {
+      sess2Id = sess2Res.rows[0].id;
+      await pool.query(`UPDATE sessions SET title = 'Weekly Session - 2', description = 'Weekly Competitive Programming Session #2 covering algorithm design, dynamic programming, and Codeforces problem solving.' WHERE id = $1`, [sess2Id]);
+    }
+
+    const cpSession2MembersList = [
+      { name: "Hasini. M", student_id: "NC.SC.U4CSE26018", department: "B.Tech CSE", year: "2026-2030" },
+      { name: "Miduniya. A", student_id: "NC.SC.U4CSE26026", department: "B.Tech CSE (Sec A)", year: "2026-2030" },
+      { name: "G. Pragnasri", student_id: "NC.SC.U4CSE26013", department: "B.Tech CSE", year: "2026-2030" },
+      { name: "Shrinidhi Nagarajan", student_id: "NC.SC.U4CSE26044", department: "B.Tech CSE", year: "2026-2030" },
+      { name: "Asmitha M", student_id: "NC.SC.U4CSE26006", department: "B.Tech CSE", year: "2026-2030" },
+      { name: "Jayashree. K.M", student_id: "NC.SC.U4CSE26019", department: "B.Tech CSE", year: "2026-2030" },
+      { name: "Yaazhini. M", student_id: "NC.SC.U4CSE26231", department: "B.Tech CSE (Sec C)", year: "2026-2030" },
+      { name: "Diva Dharshini. M", student_id: "NC.SC.U4CSE26229", department: "B.Tech CSE (Sec C)", year: "2026-2030" },
+      { name: "Monika Ganesh", student_id: "NC.SC.U4CSE26028", department: "B.Tech CSE (Sec A)", year: "2026-2030" },
+      { name: "Panchami Pankaj", student_id: "NC.SC.U4CSE26033", department: "B.Tech CSE (Sec A)", year: "2026-2030" },
+      { name: "Reemita Sharma", student_id: "NC.SC.U4CSE26038", department: "B.Tech CSE (Sec A)", year: "2026-2030" },
+      { name: "Roopa Ashritha", student_id: "NC.SC.U4CSE26005", department: "B.Tech CSE (Sec A)", year: "2026-2030" },
+      { name: "Preety Kumari", student_id: "NC.SC.U4CSE26241", department: "B.Tech CSE (Sec C)", year: "2026-2030" },
+      { name: "Pratibha Patil", student_id: "NC.SC.U4CSE26240", department: "B.Tech CSE (Sec C)", year: "2026-2030" },
+      { name: "Nimitha Senny", student_id: "NC.SC.U4CSE26032", department: "B.Tech CSE (Sec A)", year: "2026-2030" },
+      { name: "Muthu Selvi. B", student_id: "NC.SC.U4CSE26029", department: "B.Tech CSE (Sec A)", year: "2026-2030" },
+      { name: "M. Subhashree", student_id: "NC.SC.U4CSE26230", department: "B.Tech CSE (Sec C)", year: "2026-2030" },
+      { name: "Pottolla Shreshta", student_id: "NC.SC.U4CSE26239", department: "B.Tech CSE (Sec C)", year: "2026-2030" },
+      { name: "Bahya Abdul Majeed", student_id: "NC.SC.U4CSE26207", department: "B.Tech CSE (Sec C)", year: "2026-2030" },
+      { name: "Devananda R.", student_id: "NC.SC.U4CSE26212", department: "B.Tech CSE", year: "2026-2030" },
+      { name: "Diksha Mhatre", student_id: "NC.SC.U4CSE26317", department: "B.Tech CSE", year: "2026-2030" },
+      { name: "A. Jaswith Reddy", student_id: "NC.SC.U4CSE26205", department: "B.Tech CSE", year: "2026-2030" },
+      { name: "Anthony Jebestein", student_id: "NC.SC.U4CSE26206", department: "B.Tech CSE", year: "2026-2030" },
+      { name: "Anish. A", student_id: "NC.SC.U4CSE26103", department: "B.Tech CSE (Sec B)", year: "2026-2030" },
+      { name: "R. Lohith Suthan", student_id: "NC.SC.U4CSE26227", department: "B.Tech CSE (Sec C)", year: "2026-2030" },
+      { name: "Kokil Mithran", student_id: "NC.SC.U4CSE26327", department: "B.Tech CSE (Sec D)", year: "2026-2030" },
+      { name: "Hari", student_id: "NC.SC.U4CSE26323", department: "B.Tech CSE (Sec D)", year: "2026-2030" },
+      { name: "Tharun Gopi. S.K", student_id: "NC.SC.U4CSE26047", department: "B.Tech CSE (Sec A)", year: "2026-2030" },
+      { name: "Akash J", student_id: "NC.SC.U4CSE26004", department: "B.Tech CSE (Sec A)", year: "2026-2030" },
+      { name: "Yoha Sanjeev", student_id: "NC.SC.U4CSE26052", department: "B.Tech CSE (Sec A)", year: "2026-2030" },
+      { name: "Sakthivel S.D", student_id: "NC.SC.U4CSE26041", department: "B.Tech CSE (Sec A)", year: "2026-2030" },
+      { name: "CH. Sathya surya", student_id: "NC.SC.U4CSE26010", department: "B.Tech CSE (Sec A)", year: "2026-2030" },
+      { name: "Daniel", student_id: "NC.SC.U4CSE26011", department: "B.Tech CSE (Sec A)", year: "2026-2030" },
+      { name: "G. Modhin Senaram", student_id: "NC.SC.U4CSE26012", department: "B.Tech CSE (Sec A)", year: "2026-2030" },
+      { name: "Sreenivas Hari Rajan", student_id: "NC.SC.U4CSE26248", department: "B.Tech CSE (Sec C)", year: "2026-2030" },
+      { name: "S. Aromal", student_id: "NC.SC.U4CSE26243", department: "B.Tech CSE (Sec C)", year: "2026-2030" },
+      { name: "Mohnish S", student_id: "NC.SC.U4CSE26027", department: "B.Tech CSE (Sec A)", year: "2026-2030" },
+      { name: "Arun S K", student_id: "NC.EN.U4ECE26010", department: "B.Tech ECE", year: "2026-2030" },
+      { name: "Govind Nikhil", student_id: "NC.EN.U4ECE26019", department: "B.Tech ECE", year: "2026-2030" },
+      { name: "Abhinav Krishna", student_id: "NC.SC.U4CSE26003", department: "B.Tech CSE (Sec A)", year: "2026-2030" },
+      { name: "Kapilan. V.V.", student_id: "NC.SC.U4CSE26119", department: "B.Tech CSE (Sec B)", year: "2026-2030" },
+      { name: "Tharunprasath. S", student_id: "NC.SC.U4CSE26144", department: "B.Tech CSE (Sec B)", year: "2026-2030" },
+      { name: "R. Ruthraprasath", student_id: "NC.SC.U4CSE26040", department: "B.Tech CSE (Sec A)", year: "2026-2030" },
+      { name: "Santhosh", student_id: "NC.SC.U4CSE26043", department: "B.Tech CSE (Sec A)", year: "2026-2030" },
+      { name: "Sanjai Prasanth M", student_id: "NC.SC.U4CSE26042", department: "B.Tech CSE (Sec A)", year: "2026-2030" },
+      { name: "Prakash. N", student_id: "NC.SC.U4CSE26034", department: "B.Tech CSE (Sec A)", year: "2026-2030" },
+      { name: "Chandresh N", student_id: "NC.SC.U4CSE26209", department: "B.Tech CSE (Sec C)", year: "2026-2030" },
+      { name: "G. Manideep", student_id: "NC.SC.U4CSE26215", department: "B.Tech CSE (Sec C)", year: "2026-2030" },
+      { name: "Ramahari H J", student_id: "NC.SC.U4CSE26037", department: "B.Tech CSE (Sec A)", year: "2026-2030" },
+      { name: "Niraj S. Nair", student_id: "NC.SC.U4CSE26031", department: "B.Tech CSE (Sec A)", year: "2026-2030" },
+      { name: "NIVED S.P", student_id: "NC.SC.U4CSE26237", department: "B.Tech CSE (Sec C)", year: "2026-2030" },
+      { name: "GOPESH P.S", student_id: "NC.SC.U4CSE26014", department: "B.Tech CSE (Sec A)", year: "2026-2030" },
+      { name: "S. Abhijith", student_id: "NC.SC.U4CSE26339", department: "B.Tech CSE (Sec D)", year: "2026-2030" },
+      { name: "Deekshith K", student_id: "NC.SC.U4CSE26313", department: "B.Tech CSE (Sec D)", year: "2026-2030" },
+      { name: "Abhayananda R", student_id: "NC.SC.U4CSE26303", department: "B.Tech CSE (Sec D)", year: "2026-2030" },
+      { name: "Durgalakshmi V", student_id: "NC.SC.U4CSE26319", department: "B.Tech CSE (Sec D)", year: "2026-2030" },
+      { name: "Deshna G", student_id: "NC.SC.U4CSE26314", department: "B.Tech CSE (Sec D)", year: "2026-2030" },
+      { name: "S. Tejesh", student_id: "NC.SC.U4CSE26141", department: "B.Tech CSE", year: "2026-2030" },
+      { name: "K. Somasekhar Reddy", student_id: "NC.SC.U4CSE26325", department: "B.Tech CSE", year: "2026-2030" },
+      { name: "K. Sreenivasa Reddy", student_id: "NC.SC.U4CSE26328", department: "B.Tech CSE", year: "2026-2030" },
+      { name: "K. Komal Harshith Reddy", student_id: "NC.SC.U4CSE26326", department: "B.Tech CSE", year: "2026-2030" },
+      { name: "V. Harish Ragavendra", student_id: "NC.SC.U4CSE26147", department: "B.Tech CSE", year: "2026-2030" },
+      { name: "G. Chetan Shankar", student_id: "NC.SC.U4CSE26112", department: "B.Tech CSE", year: "2026-2030" },
+      { name: "Aryan Anand", student_id: "NC.SC.U4CSE26104", department: "B.Tech CSE", year: "2026-2030" },
+      { name: "Aadyanth Krishna A", student_id: "NC.SC.U4CSE26301", department: "B.Tech CSE", year: "2026-2030" },
+      { name: "D. Siva Charan Reddy", student_id: "NC.SC.U4CSE26318", department: "B.Tech CSE", year: "2026-2030" },
+      { name: "T. Hariharan", student_id: "NC.SC.U4CSE26347", department: "B.Tech CSE", year: "2026-2030" },
+      { name: "T. Harishkumar", student_id: "NC.SC.U4CSE26321", department: "B.Tech CSE", year: "2026-2030" },
+      { name: "Jayaveanthan V M", student_id: "NC.SC.U4CSE26324", department: "B.Tech CSE", year: "2026-2030" },
+      { name: "A. Harsha Teja Sai", student_id: "NC.SC.U4CSE26102", department: "B.Tech CSE", year: "2026-2030" },
+      { name: "K. Hemanth Aryan", student_id: "NC.SC.U4CSE26120", department: "B.Tech CSE", year: "2026-2030" },
+      { name: "Shashank", student_id: "NC.SC.U4CSE26111", department: "B.Tech CSE", year: "2026-2030" },
+      { name: "Shiva", student_id: "NC.SC.U4CSE26127", department: "B.Tech CSE", year: "2026-2030" },
+      { name: "Rohan Sai", student_id: "NC.SC.U4CSE26132", department: "B.Tech CSE", year: "2026-2030" },
+      { name: "L.A. Aaron Antony", student_id: "NC.SC.U4CSE26302", department: "B.Tech CSE", year: "2026-2030" },
+      { name: "Muhammed Niyas H", student_id: "NC.SC.U4CSE26330", department: "B.Tech CSE", year: "2026-2030" },
+      { name: "M. Dharanitharan", student_id: "NC.SC.U4CSE26315", department: "B.Tech CSE", year: "2026-2030" },
+      { name: "Annro Arshan A", student_id: "NC.SC.U4CSE26307", department: "B.Tech CSE", year: "2026-2030" },
+      { name: "D. Akshay", student_id: "NC.SC.U4CSE26312", department: "B.Tech CSE", year: "2026-2030" },
+      { name: "S. Sreerag", student_id: "NC.SC.U4CSE26340", department: "B.Tech CSE", year: "2026-2030" },
+      { name: "Saroj R", student_id: "NC.SC.U4CSE26139", department: "B.Tech CSE", year: "2026-2030" },
+      { name: "Midhun", student_id: "NC.SC.U4CSE26126", department: "B.Tech CSE", year: "2026-2030" },
+      { name: "T. Neeraj T S", student_id: "NC.SC.U4CSE26129", department: "B.Tech CSE", year: "2026-2030" },
+      { name: "Pramith Murali", student_id: "NC.SC.U4CSE26131", department: "B.Tech CSE", year: "2026-2030" },
+      { name: "Gautham P Namposthiry", student_id: "NC.SC.U4CSE26110", department: "B.Tech CSE", year: "2026-2030" },
+      { name: "Inayath Sajjad", student_id: "NC.SC.U4CSE26219", department: "B.Tech CSE", year: "2026-2030" },
+      { name: "Riyas", student_id: "NC.SC.U4CSE26242", department: "B.Tech CSE", year: "2026-2030" },
+      { name: "Aditya Sankar M", student_id: "NC.SC.U4CSE26305", department: "B.Tech CSE", year: "2026-2030" },
+      { name: "Shreya R.P", student_id: "NC.SC.U4CSE26140", department: "B.Tech CSE (Sec B)", year: "2026-2030" },
+      { name: "Akshaya Shree S", student_id: "NC.SC.U4CSE26101", department: "B.Tech CSE (Sec B)", year: "2026-2030" },
+      { name: "Kanishka U.K", student_id: "NC.SC.U4CSE26118", department: "B.Tech CSE (Sec C)", year: "2026-2030" },
+      { name: "Hari Preetha J", student_id: "NC.SC.U4CSE26217", department: "B.Tech CSE (Sec B)", year: "2026-2030" },
+      { name: "Hasini Bairedla", student_id: "NC.SC.U4CSE26115", department: "B.Tech CSE (Sec B)", year: "2026-2030" },
+      { name: "B. Snigdha Reddy", student_id: "NC.SC.U4CSE26153", department: "B.Tech CSE (Sec B)", year: "2026-2030" },
+      { name: "G. Renuka", student_id: "NC.SC.U4CSE26109", department: "B.Tech CSE (Sec C)", year: "2026-2030" },
+      { name: "S. Ramya Sri", student_id: "NC.SC.U4CSE26247", department: "B.Tech CSE (Sec C)", year: "2026-2030" },
+      { name: "P. Rohini Reddy", student_id: "NC.SC.U4CSE26238", department: "B.Tech CSE (Sec C)", year: "2026-2030" },
+      { name: "G. Siri Reddy", student_id: "NC.SC.U4CSE26252", department: "B.Tech CSE (Sec D)", year: "2026-2030" },
+      { name: "Anuba C", student_id: "NC.SC.U4CSE26308", department: "B.Tech CSE (Sec D)", year: "2026-2030" },
+      { name: "Yashwanthni R K", student_id: "NC.SC.U4CSE26351", department: "B.Tech CSE (Sec D)", year: "2026-2030" },
+      { name: "Sreya P S", student_id: "NC.SC.U4CSE26344", department: "B.Tech CSE (Sec D)", year: "2026-2030" },
+      { name: "Shajitha Barvin S", student_id: "NC.SC.U4CSE26342", department: "B.Tech CSE (Sec D)", year: "2026-2030" },
+      { name: "Krishna S S", student_id: "NC.SC.U4CSE26122", department: "B.Tech CSE", year: "2026-2030" }
+    ];
+
+    await Promise.all(cpSession2MembersList.map(async (m) => {
+      const email = `${m.student_id.toLowerCase()}@nc.students.amrita.edu`;
+      const cmRes = await pool.query(`
+        INSERT INTO club_members (email, student_id, name, department, year)
+        VALUES ($1, $2, $3, $4, $5)
+        ON CONFLICT (student_id) DO UPDATE SET
+          name = EXCLUDED.name,
+          email = EXCLUDED.email,
+          department = EXCLUDED.department,
+          year = EXCLUDED.year
+        RETURNING id
+      `, [email, m.student_id, m.name, m.department, m.year]);
+
+      const memberId = cmRes.rows[0].id;
+
+      await pool.query(`
+        INSERT INTO attendance (session_id, club_member_id, status, reason)
+        VALUES ($1, $2, 'PRESENT', NULL)
+        ON CONFLICT (session_id, club_member_id) DO UPDATE SET
+          status = 'PRESENT',
+          marked_at = CURRENT_TIMESTAMP
+      `, [sess2Id, memberId]);
+    }));
 
     console.log('Database initialization & migrations completed successfully!');
   } catch (error) {

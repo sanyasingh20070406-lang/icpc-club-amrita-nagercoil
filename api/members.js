@@ -43,16 +43,68 @@ export default async function handler(req, res) {
 
   const { action, id } = req.query;
 
-  // GET /api/members -> Fetch all approved club members with registration status
+  // GET /api/members -> Fetch all approved club members with registration status & attendance summary
   if (req.method === 'GET') {
+    const { id } = req.query;
     try {
+      if (id) {
+        const result = await pool.query(`
+          WITH total_sess AS (
+            SELECT COUNT(*) as total_count
+            FROM sessions
+            WHERE start_time <= CURRENT_TIMESTAMP AND status != 'CANCELLED'
+          )
+          SELECT cm.id, cm.email, cm.student_id, cm.name, cm.department, cm.year, 
+                 cm.codeforces_handle, cm.is_active, cm.created_at,
+                 CASE WHEN u.id IS NOT NULL THEN TRUE ELSE FALSE END as is_registered,
+                 u.role as user_role,
+                 ts.total_count as total_sessions,
+                 COALESCE(COUNT(CASE WHEN UPPER(a.status) = 'PRESENT' THEN 1 END), 0)::integer as present_count,
+                 COALESCE(COUNT(CASE WHEN UPPER(a.status) = 'ABSENT' THEN 1 END), 0)::integer as absent_count,
+                 CASE 
+                   WHEN ts.total_count > 0 THEN 
+                     ROUND((COALESCE(COUNT(CASE WHEN UPPER(a.status) = 'PRESENT' THEN 1 END), 0)::decimal / ts.total_count) * 100)::integer
+                   ELSE 0 
+                 END as attendance_percentage
+          FROM club_members cm
+          LEFT JOIN users u ON cm.id = u.club_member_id
+          LEFT JOIN attendance a ON cm.id = a.club_member_id
+          CROSS JOIN total_sess ts
+          WHERE cm.id = $1
+          GROUP BY cm.id, cm.email, cm.student_id, cm.name, cm.department, cm.year, 
+                   cm.codeforces_handle, cm.is_active, cm.created_at, u.id, u.role, ts.total_count
+        `, [id]);
+
+        if (result.rows.length === 0) {
+          return res.status(404).json({ message: 'Member not found' });
+        }
+        return res.status(200).json(result.rows[0]);
+      }
+
       const result = await pool.query(`
+        WITH total_sess AS (
+          SELECT COUNT(*) as total_count
+          FROM sessions
+          WHERE start_time <= CURRENT_TIMESTAMP AND status != 'CANCELLED'
+        )
         SELECT cm.id, cm.email, cm.student_id, cm.name, cm.department, cm.year, 
                cm.codeforces_handle, cm.is_active, cm.created_at,
                CASE WHEN u.id IS NOT NULL THEN TRUE ELSE FALSE END as is_registered,
-               u.role as user_role
+               u.role as user_role,
+               ts.total_count as total_sessions,
+               COALESCE(COUNT(CASE WHEN UPPER(a.status) = 'PRESENT' THEN 1 END), 0)::integer as present_count,
+               COALESCE(COUNT(CASE WHEN UPPER(a.status) = 'ABSENT' THEN 1 END), 0)::integer as absent_count,
+               CASE 
+                 WHEN ts.total_count > 0 THEN 
+                   ROUND((COALESCE(COUNT(CASE WHEN UPPER(a.status) = 'PRESENT' THEN 1 END), 0)::decimal / ts.total_count) * 100)::integer
+                 ELSE 0 
+               END as attendance_percentage
         FROM club_members cm
         LEFT JOIN users u ON cm.id = u.club_member_id
+        LEFT JOIN attendance a ON cm.id = a.club_member_id
+        CROSS JOIN total_sess ts
+        GROUP BY cm.id, cm.email, cm.student_id, cm.name, cm.department, cm.year, 
+                 cm.codeforces_handle, cm.is_active, cm.created_at, u.id, u.role, ts.total_count
         ORDER BY cm.name ASC
       `);
       return res.status(200).json(result.rows);

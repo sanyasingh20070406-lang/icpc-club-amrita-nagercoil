@@ -45,10 +45,12 @@ export default async function handler(req, res) {
         session_id INTEGER REFERENCES sessions(id) ON DELETE CASCADE,
         student_id INTEGER REFERENCES students(id) ON DELETE CASCADE,
         status VARCHAR(50) DEFAULT 'present',
+        reason TEXT,
         created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
         UNIQUE(session_id, student_id)
       );
     `);
+    await pool.query(`ALTER TABLE attendance ADD COLUMN IF NOT EXISTS reason TEXT;`);
 
     // Create password_resets table
     await pool.query(`

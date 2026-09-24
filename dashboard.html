@@ -140,6 +140,9 @@
         <div style="margin-top: 8px; font-size: 0.9rem; color: #cbd5e1;">
           Department: <strong id="user-dept">...</strong> | Codeforces Handle: <strong id="user-cf" style="color: #38bdf8;">...</strong>
         </div>
+        <div style="margin-top: 8px; font-size: 0.9rem; color: #cbd5e1;">
+          Address: <span id="user-address">...</span> <button class="btn btn-outline" style="padding: 2px 8px; font-size: 0.75rem; margin-left: 8px;" onclick="updateAddress()">Edit</button>
+        </div>
       </div>
       <div>
         <span class="btn btn-outline" id="user-role-badge" style="border-color: #0D9488; color: #0D9488;">MEMBER</span>
@@ -236,6 +239,7 @@
         document.getElementById('user-email').textContent = user.email;
         document.getElementById('user-dept').textContent = user.department || 'N/A';
         document.getElementById('user-cf').textContent = user.codeforces_handle || 'Not set';
+        document.getElementById('user-address').textContent = user.address || 'Not provided';
         document.getElementById('user-role-badge').textContent = user.role;
 
         if (user.role === 'ADMIN' || user.role === 'admin') {
@@ -258,11 +262,22 @@
             att.history.forEach(h => {
               const d = new Date(h.start_time).toLocaleDateString();
               const isP = h.status.toUpperCase() === 'PRESENT';
+              let reasonHtml = '';
+              if (!isP) {
+                if (h.reason) {
+                  reasonHtml = `<div style="font-size: 0.78rem; color: #f43f5e; margin-top: 4px;"><strong>Reason:</strong> ${h.reason}</div>`;
+                } else {
+                  reasonHtml = `<div style="margin-top: 4px;"><button class="btn btn-outline" style="padding: 2px 8px; font-size: 0.7rem;" onclick="submitAbsenceReason(${h.session_id})">Provide Reason</button></div>`;
+                }
+              }
               tbody.innerHTML += `
                 <tr>
                   <td><strong>${h.session_title}</strong><br><small style="color:#94a3b8;">${h.session_type}</small></td>
                   <td>${d}</td>
-                  <td><span class="badge ${isP ? 'badge-present' : 'badge-absent'}">${h.status}</span></td>
+                  <td>
+                    <span class="badge ${isP ? 'badge-present' : 'badge-absent'}">${h.status}</span>
+                    ${reasonHtml}
+                  </td>
                 </tr>
               `;
             });
@@ -318,6 +333,50 @@
 
       } catch (err) {
         console.error('Error loading dashboard:', err);
+      }
+    }
+
+    async function updateAddress() {
+      const newAddress = prompt("Enter your new address:");
+      if (newAddress !== null) {
+        try {
+          const res = await fetch('/api/auth?action=update-profile', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + token },
+            body: JSON.stringify({ address: newAddress })
+          });
+          if (res.ok) {
+            document.getElementById('user-address').textContent = newAddress || 'Not provided';
+            alert('Address updated successfully');
+          } else {
+            const err = await res.json();
+            alert('Failed to update address: ' + err.message);
+          }
+        } catch (error) {
+          alert('Error updating address');
+        }
+      }
+    }
+
+    async function submitAbsenceReason(sessionId) {
+      const reason = prompt("Please provide a reason for your absence:");
+      if (reason && reason.trim() !== "") {
+        try {
+          const res = await fetch('/api/attendance?action=submit-reason', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + token },
+            body: JSON.stringify({ session_id: sessionId, reason: reason.trim() })
+          });
+          if (res.ok) {
+            alert('Reason submitted successfully');
+            loadDashboard(); // Refresh the table
+          } else {
+            const err = await res.json();
+            alert('Failed to submit reason: ' + err.message);
+          }
+        } catch (error) {
+          alert('Error submitting reason');
+        }
       }
     }
 
