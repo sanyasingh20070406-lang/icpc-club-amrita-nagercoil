@@ -3,7 +3,7 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Events & Workshops - ICPC Club Amrita Nagercoil</title>
+    <title>Events & Gallery - ICPC Club Amrita Nagercoil</title>
     <meta
       name="description"
       content="Explore upcoming events, technical workshops, weekly practice sessions, and mock contests at ICPC Club Amrita Nagercoil."
@@ -34,9 +34,8 @@
           <a href="roadmap.html">Roadmap</a>
           <a href="editorials.html">Editorials</a>
           <a href="why-join.html">Why Join</a>
-          <a href="events.html" class="active">Events</a>
+          <a href="events.html" class="active">Events &amp; Gallery</a>
           <a href="team.html">Team</a>
-          <a href="gallery.html">Gallery</a>
           <a href="announcements.html">Announcements</a>
           <a href="contact.html">Contact</a>
         </div>
@@ -143,11 +142,69 @@
               Check out photos and moments captured during our regional contests, orientation sessions, and CodeSprint competitions.
             </p>
           </div>
-          <div style="text-align: center;">
-            <a href="gallery.html" class="btn btn-primary" style="margin-top: 1rem;">View Event Gallery</a>
+          
+        </div>
+      </section>
+    <!-- Gallery Section -->
+      <section class="section">
+        <div class="container">
+          <div style="text-align: center; margin-bottom: 2.5rem;">
+            <p class="section-label">PHOTO ARCHIVE</p>
+            <h2>Click any album to open the interactive lightbox</h2>
+          </div>
+          
+          <div class="gallery-groups">
+            <article class="group-card" data-images="images/event4.jpeg" data-title="ICPC 2025">
+              <div class="group-thumb">
+                <img src="images/event4.jpeg" alt="ICPC 2025" />
+              </div>
+              <div class="group-meta">
+                <div>
+                  <h3>ICPC 2025</h3>
+                  <p class="muted">Official regional contest round</p>
+                </div>
+              </div>
+            </article>
+
+            <article class="group-card" data-images="images/event1.jpeg,images/event2.jpeg,images/event3.jpeg" data-title="CodeSprint">
+              <div class="group-thumb">
+                <img src="images/event1.jpeg" alt="CodeSprint" />
+              </div>
+              <div class="group-meta">
+                <div>
+                  <h3>CodeSprint</h3>
+                  <p class="muted">Internal club members coding competition</p>
+                </div>
+              </div>
+            </article>
+
+            <article class="group-card" data-images="images/event5.jpeg,images/event6.jpeg,images/event7.jpeg" data-title="ICPC 2026 Orientation">
+              <div class="group-thumb">
+                <img src="images/event5.jpeg" alt="ICPC 2026 Orientation Session" />
+              </div>
+              <div class="group-meta">
+                <div>
+                  <h3>ICPC 2026 Orientation</h3>
+                  <p class="muted">Orientation session for freshers</p>
+                </div>
+              </div>
+            </article>
+
+            <article class="group-card" data-images="images/REVDEBUG1.jpeg,images/REV2.jpeg,images/REV.jpeg" data-title="REVDEBUG 2026">
+              <div class="group-thumb">
+                <img src="images/REVDEBUG1.jpeg" alt="REVDEBUG 2026" />
+              </div>
+              <div class="group-meta">
+                <div>
+                  <h3>REVDEBUG 2026</h3>
+                  <p class="muted">For all departments and years</p>
+                </div>
+              </div>
+            </article>
           </div>
         </div>
       </section>
+    
     </main>
 
     <!-- Wave canvas container -->
@@ -155,6 +212,23 @@
       <canvas id="wave-canvas" aria-hidden="true"></canvas>
     </div>
 
+    <!-- Lightbox modal -->
+    <div id="lightbox" class="lightbox hidden" aria-hidden="true">
+      <div class="lightbox-backdrop"></div>
+      <div class="lightbox-panel">
+        <button class="lb-close" aria-label="Close">×</button>
+        <div class="lb-inner">
+          <button class="lb-prev" aria-label="Previous">‹</button>
+          <div class="carousel" role="region" aria-label="Image carousel">
+            <div class="carousel-track"></div>
+          </div>
+          <button class="lb-next" aria-label="Next">›</button>
+        </div>
+        <p class="lb-caption"></p>
+      </div>
+    </div>
+
+    
     <!-- Footer Section -->
     <footer class="footer">
       <div class="container footer-top">
@@ -172,8 +246,7 @@
             <h4>Explore</h4>
             <a href="index.html">Home</a>
             <a href="about.html">About</a>
-            <a href="events.html" class="active">Events</a>
-            <a href="gallery.html">Gallery</a>
+            <a href="events.html" class="active">Events &amp; Gallery</a>
           </div>
           <div class="footer-col">
             <h4>Resources</h4>

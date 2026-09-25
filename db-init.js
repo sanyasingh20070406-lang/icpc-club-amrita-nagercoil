@@ -162,7 +162,6 @@ async function initDB() {
     const adminRosterData = [
       { name: 'Thannamal Indu V', title: 'Head Coordinator', role: 'COORDINATOR', email: 'indu.icpc@amrita.edu', student_id: 'NC.SC.U4CSE25008', department: 'B.Tech CSE', year: '2025-2029' },
       { name: 'Supriya Mam', title: 'Faculty Coordinator', role: 'FACULTY', email: 'supriya.icpc@amrita.edu', student_id: 'NC.SC.FAC25009', department: 'Faculty', year: 'Staff' },
-      { name: 'Mr Dharun Kaarthick', title: 'ICPC Club Coordinator', role: 'ADMIN', email: 'nc.sc.u4cse24012@nc.students.amrita.edu', student_id: 'NC.SC.U4CSE24012', department: 'BTech CSE', year: '2024-2028' },
       { name: 'Suhashini K', title: 'Vice Lead', role: 'ADMIN', email: 'suhashini.icpc@amrita.edu', student_id: 'NC.SC.U4CSE25010', department: 'B.Tech CSE', year: '2025-2029' },
       { name: 'Babideeran G', title: 'Vice Lead', role: 'ADMIN', email: 'babideeran.icpc@amrita.edu', student_id: 'NC.SC.U4CSE25011', department: 'B.Tech CSE', year: '2025-2029' },
       { name: 'Sanya Singh', title: 'Technical Lead', role: 'ADMIN', email: 'nc.sc.u4cse25140@nc.students.amrita.edu', student_id: 'NC.SC.U4CSE25140', department: 'B.Tech CSE', year: '2026-2030' },
@@ -207,7 +206,8 @@ async function initDB() {
       { name: 'Kavya R', email: 'kavya.icpc@amrita.edu', student_id: 'NC.SC.U4CSE25002', department: 'B.Tech CYS', year: '2025-2029', handle: 'kavya_code' },
       { name: 'Rahul M', email: 'rahul.icpc@amrita.edu', student_id: 'NC.SC.U4CSE25003', department: 'B.Tech AIE', year: '2025-2029', handle: 'rahul_algo' },
       { name: 'Priya S', email: 'priya.icpc@amrita.edu', student_id: 'NC.SC.U4CSE25004', department: 'B.Tech CSE', year: '2025-2029', handle: 'priya_p' },
-      { name: 'Karthik N', email: 'karthik.icpc@amrita.edu', student_id: 'NC.SC.U4CSE25005', department: 'B.Tech CSE', year: '2025-2029', handle: 'karthik_n' }
+      { name: 'Karthik N', email: 'karthik.icpc@amrita.edu', student_id: 'NC.SC.U4CSE25005', department: 'B.Tech CSE', year: '2025-2029', handle: 'karthik_n' },
+      { name: 'Dharun Kaarthick', email: 'nc.sc.u4cse24012@nc.students.amrita.edu', student_id: 'NC.SC.U4CSE24012', department: 'BTech CSE', year: '2024-2028', handle: 'dharun_k' }
     ];
 
     for (const m of approvedMembers) {
@@ -222,41 +222,42 @@ async function initDB() {
       );
     }
 
-    // 9. Provision Admin Accounts for Sanya Singh & Dharun Kaarthick
-    console.log('Provisioning Admin User Accounts for Sanya Singh & Dharun Kaarthick...');
+    // 9. Provision Accounts for Sanya Singh & Dharun Kaarthick
+    console.log('Provisioning User Accounts for Team Members & Dharun Kaarthick...');
     const salt = await bcrypt.genSalt(10);
     const defaultHash = await bcrypt.hash('admin123', salt);
 
-    // Sanya Singh Admin Account
-    const sanyaAdmin = await pool.query(`SELECT id FROM admin_roster WHERE student_id = 'NC.SC.U4CSE25140' OR LOWER(email) LIKE '%sanya%'`);
-    const sanyaArId = sanyaAdmin.rows.length > 0 ? sanyaAdmin.rows[0].id : null;
-    const sanyaEmail = 'nc.sc.u4cse25140@nc.students.amrita.edu';
+    for (const a of adminRosterData) {
+      const aAdmin = await pool.query(`SELECT id FROM admin_roster WHERE student_id = $1`, [a.student_id]);
+      const arId = aAdmin.rows.length > 0 ? aAdmin.rows[0].id : null;
+      
+      await pool.query(
+        `INSERT INTO users (admin_id, email, student_id, name, password_hash, role)
+         VALUES ($1, $2, $3, $4, $5, $6)
+         ON CONFLICT (student_id) DO UPDATE SET 
+           role = EXCLUDED.role, 
+           email = EXCLUDED.email, 
+           password_hash = EXCLUDED.password_hash, 
+           admin_id = EXCLUDED.admin_id`,
+        [arId, a.email, a.student_id, a.name, defaultHash, a.role]
+      );
+    }
 
-    await pool.query(
-      `INSERT INTO users (admin_id, email, student_id, name, password_hash, role)
-       VALUES ($1, $2, 'NC.SC.U4CSE25140', 'Sanya Singh', $3, 'ADMIN')
-       ON CONFLICT (student_id) DO UPDATE SET 
-         role = 'ADMIN', 
-         email = EXCLUDED.email, 
-         password_hash = EXCLUDED.password_hash, 
-         admin_id = EXCLUDED.admin_id`,
-      [sanyaArId, sanyaEmail, defaultHash]
-    );
-
-    // Dharun Kaarthick Admin Account
-    const dharunAdmin = await pool.query(`SELECT id FROM admin_roster WHERE student_id = 'NC.SC.U4CSE24012' OR LOWER(email) LIKE '%dharun%'`);
-    const dharunArId = dharunAdmin.rows.length > 0 ? dharunAdmin.rows[0].id : null;
+    // Dharun Kaarthick Member Account
+    const dharunMember = await pool.query(`SELECT id FROM club_members WHERE student_id = 'NC.SC.U4CSE24012' OR LOWER(email) LIKE '%dharun%'`);
+    const dharunMemberId = dharunMember.rows.length > 0 ? dharunMember.rows[0].id : null;
     const dharunEmail = 'nc.sc.u4cse24012@nc.students.amrita.edu';
 
     await pool.query(
-      `INSERT INTO users (admin_id, email, student_id, name, password_hash, role)
-       VALUES ($1, $2, 'NC.SC.U4CSE24012', 'Dharun Kaarthick', $3, 'ADMIN')
+      `INSERT INTO users (club_member_id, admin_id, email, student_id, name, password_hash, role)
+       VALUES ($1, NULL, $2, 'NC.SC.U4CSE24012', 'Dharun Kaarthick', $3, 'MEMBER')
        ON CONFLICT (student_id) DO UPDATE SET 
-         role = 'ADMIN', 
+         role = 'MEMBER', 
          email = EXCLUDED.email, 
          password_hash = EXCLUDED.password_hash, 
-         admin_id = EXCLUDED.admin_id`,
-      [dharunArId, dharunEmail, defaultHash]
+         club_member_id = EXCLUDED.club_member_id,
+         admin_id = NULL`,
+      [dharunMemberId, dharunEmail, defaultHash]
     );
 
     // 10. Keep ONLY ONE single Beginner Friendly Online CP Session for today (18:00 - 19:00 of 28/08/26)
