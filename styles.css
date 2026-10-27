@@ -2309,3 +2309,217 @@ h2 {
     right: 0px;
   }
 }
+
+/* ==========================================================================
+   ICPC Club Animated Custom Cursor (Think. Create. Solve.)
+   ========================================================================== */
+
+/* Only hide default pointer on desktop devices with fine pointer control */
+@media (hover: hover) and (pointer: fine) {
+  body.icpc-custom-cursor-enabled,
+  body.icpc-custom-cursor-enabled a,
+  body.icpc-custom-cursor-enabled button,
+  body.icpc-custom-cursor-enabled [role="button"],
+  body.icpc-custom-cursor-enabled .btn,
+  body.icpc-custom-cursor-enabled .menu-toggle,
+  body.icpc-custom-cursor-enabled .chip,
+  body.icpc-custom-cursor-enabled .clickable {
+    cursor: none !important;
+  }
+
+  body.icpc-custom-cursor-enabled input,
+  body.icpc-custom-cursor-enabled textarea,
+  body.icpc-custom-cursor-enabled select,
+  body.icpc-custom-cursor-enabled [contenteditable="true"] {
+    cursor: text !important;
+  }
+}
+
+/* Master container for custom cursor */
+#icpc-cursor-container {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  pointer-events: none;
+  z-index: 999999;
+  overflow: hidden;
+  transition: opacity 0.25s ease;
+}
+
+#icpc-cursor-container.cursor-hidden {
+  opacity: 0 !important;
+}
+
+/* Transparent particle canvas for algorithmic trail */
+#icpc-cursor-canvas {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  z-index: 999997;
+}
+
+/* 1. Precision Laser Center Dot (instant 1:1 response) */
+.icpc-cursor-dot {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #14B8A6, #2563EB);
+  box-shadow: 0 0 10px rgba(20, 184, 166, 0.8), 0 0 20px rgba(37, 99, 235, 0.5);
+  pointer-events: none;
+  z-index: 999999;
+  transform: translate3d(-100px, -100px, 0) translate(-50%, -50%);
+  transition: width 0.2s cubic-bezier(0.16, 1, 0.3, 1),
+              height 0.2s cubic-bezier(0.16, 1, 0.3, 1),
+              background 0.2s ease,
+              opacity 0.2s ease;
+  will-change: transform;
+}
+
+/* 2. Fluid Aerodynamic Aura Follower */
+.icpc-cursor-aura {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 38px;
+  height: 38px;
+  border-radius: 50%;
+  border: 1.5px solid rgba(37, 99, 235, 0.5);
+  background: radial-gradient(circle, rgba(13, 148, 136, 0.12) 0%, rgba(37, 99, 235, 0.04) 65%, transparent 100%);
+  box-shadow: 0 0 16px rgba(37, 99, 235, 0.18), inset 0 0 10px rgba(13, 148, 136, 0.08);
+  backdrop-filter: blur(1.5px);
+  -webkit-backdrop-filter: blur(1.5px);
+  pointer-events: none;
+  z-index: 999998;
+  transform: translate3d(-100px, -100px, 0) translate(-50%, -50%);
+  transition: width 0.28s cubic-bezier(0.16, 1, 0.3, 1),
+              height 0.28s cubic-bezier(0.16, 1, 0.3, 1),
+              border-color 0.25s ease,
+              background 0.25s ease,
+              box-shadow 0.25s ease,
+              opacity 0.2s ease;
+  will-change: transform, width, height;
+}
+
+/* Rotating cybernetic dashed ring on follower */
+.icpc-cursor-aura::after {
+  content: '';
+  position: absolute;
+  top: -4px;
+  left: -4px;
+  right: -4px;
+  bottom: -4px;
+  border-radius: 50%;
+  border: 1px dashed rgba(20, 184, 166, 0.5);
+  opacity: 0;
+  transition: opacity 0.3s ease;
+  animation: icpcCursorSpin 7s linear infinite;
+}
+
+@keyframes icpcCursorSpin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+/* Interactive Hover State: Buttons, Links, Cards */
+#icpc-cursor-container.is-hovering-interactive .icpc-cursor-aura {
+  width: 58px;
+  height: 58px;
+  border-color: rgba(20, 184, 166, 0.9);
+  background: radial-gradient(circle, rgba(20, 184, 166, 0.22) 0%, rgba(37, 99, 235, 0.12) 75%, transparent 100%);
+  box-shadow: 0 0 24px rgba(20, 184, 166, 0.45), 0 0 12px rgba(37, 99, 235, 0.3);
+}
+
+#icpc-cursor-container.is-hovering-interactive .icpc-cursor-aura::after {
+  opacity: 1;
+}
+
+#icpc-cursor-container.is-hovering-interactive .icpc-cursor-dot {
+  width: 6px;
+  height: 6px;
+  background: #ffffff;
+  box-shadow: 0 0 12px rgba(20, 184, 166, 1), 0 0 24px rgba(37, 99, 235, 0.8);
+}
+
+/* Text / Input Hover State: Sleek focus indicator */
+#icpc-cursor-container.is-hovering-text .icpc-cursor-aura {
+  width: 4px;
+  height: 22px;
+  border-radius: 2px;
+  border: none;
+  background: rgba(37, 99, 235, 0.7);
+  box-shadow: 0 0 8px rgba(37, 99, 235, 0.5);
+  opacity: 0.8;
+}
+
+#icpc-cursor-container.is-hovering-text .icpc-cursor-aura::after {
+  display: none;
+}
+
+#icpc-cursor-container.is-hovering-text .icpc-cursor-dot {
+  opacity: 0;
+}
+
+/* Mouse Down / Clicking State */
+#icpc-cursor-container.is-clicking .icpc-cursor-dot {
+  transform: translate3d(-100px, -100px, 0) translate(-50%, -50%) scale(0.6);
+  opacity: 0.9;
+}
+
+#icpc-cursor-container.is-clicking .icpc-cursor-aura {
+  width: 30px;
+  height: 30px;
+  border-color: #2563EB;
+  background: rgba(37, 99, 235, 0.3);
+  box-shadow: 0 0 20px rgba(37, 99, 235, 0.5);
+}
+
+/* Click Ripple Shockwave */
+.icpc-cursor-ripple {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  border: 1.5px solid rgba(20, 184, 166, 0.85);
+  pointer-events: none;
+  z-index: 999996;
+  transform: translate(-50%, -50%) scale(0.7);
+  opacity: 1;
+  animation: icpcRippleAnim 0.45s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+@keyframes icpcRippleAnim {
+  0% {
+    transform: translate(-50%, -50%) scale(0.7);
+    opacity: 0.95;
+    border-color: rgba(20, 184, 166, 0.95);
+  }
+  100% {
+    transform: translate(-50%, -50%) scale(2.8);
+    opacity: 0;
+    border-color: rgba(37, 99, 235, 0.1);
+  }
+}
+
+/* Reduced Motion Support */
+@media (prefers-reduced-motion: reduce) {
+  #icpc-cursor-container,
+  #icpc-cursor-canvas,
+  .icpc-cursor-ripple {
+    display: none !important;
+  }
+  body.icpc-custom-cursor-enabled,
+  body.icpc-custom-cursor-enabled a,
+  body.icpc-custom-cursor-enabled button {
+    cursor: auto !important;
+  }
+}

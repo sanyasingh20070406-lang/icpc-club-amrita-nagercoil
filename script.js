@@ -411,5 +411,286 @@ document.addEventListener('DOMContentLoaded', () => {
   });
 });
 
+/* ==========================================================================
+   ICPC Club Custom Fluid Moving Animation Cursor
+   Theme: Think. Create. Solve. (Emerald Teal, Royal Blue, Algorithm Sparks)
+   ========================================================================== */
+(function initIcpcCursor() {
+  if (typeof window === 'undefined') return;
+
+  // Touch screen & reduced motion detection
+  const isTouchDevice = ('ontouchstart' in window) ||
+    (navigator.maxTouchPoints > 0) ||
+    (window.matchMedia && window.matchMedia('(pointer: coarse)').matches && !window.matchMedia('(pointer: fine)').matches);
+
+  if (isTouchDevice) return; // Keep native touch interactions on mobile & tablets
+
+  if (window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+
+  // Prevent duplicate initialization
+  if (window.__icpcCursorInitialized) return;
+  window.__icpcCursorInitialized = true;
+
+  function setupCursor() {
+    if (!document.body) return;
+
+    // Enable desktop CSS cursor styling
+    document.body.classList.add('icpc-custom-cursor-enabled');
+
+    // Create cursor DOM elements
+    const container = document.createElement('div');
+    container.id = 'icpc-cursor-container';
+    container.className = 'cursor-hidden'; // Hidden until first mousemove
+    container.setAttribute('aria-hidden', 'true');
+
+    const canvas = document.createElement('canvas');
+    canvas.id = 'icpc-cursor-canvas';
+    canvas.setAttribute('aria-hidden', 'true');
+
+    const aura = document.createElement('div');
+    aura.className = 'icpc-cursor-aura';
+
+    const dot = document.createElement('div');
+    dot.className = 'icpc-cursor-dot';
+
+    container.appendChild(canvas);
+    container.appendChild(aura);
+    container.appendChild(dot);
+    document.body.appendChild(container);
+
+    // Canvas 2D context for algorithmic sparks
+    const ctx = canvas.getContext('2d');
+    let canvasW = 0, canvasH = 0;
+    const dpr = window.devicePixelRatio || 1;
+
+    function resizeCanvas() {
+      canvasW = window.innerWidth;
+      canvasH = window.innerHeight;
+      canvas.width = Math.floor(canvasW * dpr);
+      canvas.height = Math.floor(canvasH * dpr);
+      ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+    }
+    resizeCanvas();
+    window.addEventListener('resize', resizeCanvas);
+
+    // Coordinates & Physics variables
+    let mouseX = -100, mouseY = -100;
+    let followerX = -100, followerY = -100;
+    let targetX = -100, targetY = -100;
+    let currentAngle = 0;
+    let targetStretch = 1;
+    let currentStretch = 1;
+    let isClicking = false;
+    let isVisible = false;
+    let magnetTarget = null;
+
+    // Particle spark pool
+    const particles = [];
+    const sparkColors = ['#14B8A6', '#2563EB', '#38BDF8', '#F59E0B', '#10B981'];
+
+    function spawnParticle(x, y, speed, angleOffset = null) {
+      if (particles.length > 22) return;
+      const angle = angleOffset !== null ? angleOffset : Math.random() * Math.PI * 2;
+      const velocity = (angleOffset !== null ? (Math.random() * 2 + 1.5) : (Math.random() * 1.5 + 0.5)) * Math.min(speed * 0.15 + 0.8, 3.5);
+      particles.push({
+        x: x + (Math.random() - 0.5) * 6,
+        y: y + (Math.random() - 0.5) * 6,
+        vx: Math.cos(angle) * velocity,
+        vy: Math.sin(angle) * velocity,
+        size: Math.random() * 2.2 + 1.2,
+        life: 1.0,
+        decay: Math.random() * 0.03 + 0.035,
+        color: sparkColors[Math.floor(Math.random() * sparkColors.length)]
+      });
+    }
+
+    function createClickRipple(x, y) {
+      const ripple = document.createElement('div');
+      ripple.className = 'icpc-cursor-ripple';
+      ripple.style.left = `${x}px`;
+      ripple.style.top = `${y}px`;
+      container.appendChild(ripple);
+      setTimeout(() => {
+        if (ripple.parentNode) ripple.parentNode.removeChild(ripple);
+      }, 500);
+
+      // Micro spark explosion on click
+      for (let i = 0; i < 7; i++) {
+        spawnParticle(x, y, 4, (i / 7) * Math.PI * 2);
+      }
+    }
+
+    // Animation Render Loop
+    let particleThrottle = 0;
+    function render() {
+      if (isVisible) {
+        // Calculate destination considering optional magnetic pull
+        let destX = mouseX;
+        let destY = mouseY;
+
+        if (magnetTarget) {
+          const rect = magnetTarget.getBoundingClientRect();
+          const centerX = rect.left + rect.width / 2;
+          const centerY = rect.top + rect.height / 2;
+          // Soft magnetic gravity pull toward element center
+          destX = mouseX + (centerX - mouseX) * 0.32;
+          destY = mouseY + (centerY - mouseY) * 0.32;
+        }
+
+        // Smooth damped linear interpolation (Lerp)
+        const dx = destX - followerX;
+        const dy = destY - followerY;
+        const dist = Math.hypot(dx, dy);
+
+        followerX += dx * 0.18;
+        followerY += dy * 0.18;
+
+        // Dynamic aerodynamic stretch & squash along velocity vector
+        if (dist > 1.2) {
+          const targetAngle = Math.atan2(dy, dx);
+          let angleDiff = targetAngle - currentAngle;
+          while (angleDiff < -Math.PI) angleDiff += Math.PI * 2;
+          while (angleDiff > Math.PI) angleDiff -= Math.PI * 2;
+          currentAngle += angleDiff * 0.22;
+          targetStretch = Math.min(1 + dist * 0.0035, 1.32);
+        } else {
+          targetStretch = 1;
+        }
+
+        currentStretch += (targetStretch - currentStretch) * 0.2;
+        const squash = 1 / Math.max(0.65, currentStretch * 0.88);
+
+        // Render follower aura
+        aura.style.transform = `translate3d(${followerX}px, ${followerY}px, 0) translate(-50%, -50%) rotate(${currentAngle}rad) scale(${currentStretch}, ${squash})`;
+
+        // Render pinpoint dot (instantaneous 1:1 aiming)
+        const dotScale = isClicking ? 0.6 : 1;
+        dot.style.transform = `translate3d(${mouseX}px, ${mouseY}px, 0) translate(-50%, -50%) scale(${dotScale})`;
+
+        // Spawn trailing sparks during swift movement
+        particleThrottle++;
+        if (dist > 3.5 && particleThrottle % 2 === 0) {
+          spawnParticle(followerX, followerY, dist);
+        }
+      }
+
+      // Render algorithmic spark particles on canvas
+      if (particles.length > 0) {
+        ctx.clearRect(0, 0, canvasW, canvasH);
+        for (let i = particles.length - 1; i >= 0; i--) {
+          const p = particles[i];
+          p.x += p.vx;
+          p.y += p.vy;
+          p.vx *= 0.94;
+          p.vy *= 0.94;
+          p.size *= 0.96;
+          p.life -= p.decay;
+
+          if (p.life <= 0 || p.size <= 0.4) {
+            particles.splice(i, 1);
+            continue;
+          }
+
+          ctx.save();
+          ctx.globalAlpha = Math.max(0, p.life);
+          ctx.fillStyle = p.color;
+          ctx.shadowColor = p.color;
+          ctx.shadowBlur = 6;
+          ctx.beginPath();
+          ctx.arc(p.x, p.y, p.size, 0, Math.PI * 2);
+          ctx.fill();
+          ctx.restore();
+        }
+      } else if (!isVisible) {
+        ctx.clearRect(0, 0, canvasW, canvasH);
+      }
+
+      requestAnimationFrame(render);
+    }
+    requestAnimationFrame(render);
+
+    // Mouse Event Handlers
+    window.addEventListener('mousemove', (e) => {
+      mouseX = e.clientX;
+      mouseY = e.clientY;
+
+      if (!isVisible) {
+        isVisible = true;
+        followerX = mouseX;
+        followerY = mouseY;
+        container.classList.remove('cursor-hidden');
+      }
+
+      // Check hovered element
+      const target = e.target;
+      if (!target) return;
+
+      // Text Input Detection
+      const isText = target.closest('input:not([type="submit"]):not([type="button"]):not([type="checkbox"]):not([type="radio"]), textarea, select, [contenteditable="true"]');
+      if (isText) {
+        container.classList.add('is-hovering-text');
+        container.classList.remove('is-hovering-interactive');
+        magnetTarget = null;
+        return;
+      }
+      container.classList.remove('is-hovering-text');
+
+      // Interactive Element Detection
+      const isInteractive = target.closest('a, button, .btn, [role="button"], .chip, .menu-toggle, .team-card, .group-card, .card, .resource-card, .faq-question, .edge-logo, .clickable, .member-photo-wrapper');
+      if (isInteractive) {
+        container.classList.add('is-hovering-interactive');
+        // Magnetic attraction for buttons, nav-links and icon toggles
+        if (target.closest('.btn, .nav-actions a, .menu-toggle, .edge-logo, .hero-actions a')) {
+          magnetTarget = target.closest('.btn, .nav-actions a, .menu-toggle, .edge-logo, .hero-actions a');
+        } else {
+          magnetTarget = null;
+        }
+      } else {
+        container.classList.remove('is-hovering-interactive');
+        magnetTarget = null;
+      }
+    }, { passive: true });
+
+    window.addEventListener('mousedown', (e) => {
+      if (e.button !== 0) return; // Left click only
+      isClicking = true;
+      container.classList.add('is-clicking');
+      createClickRipple(e.clientX, e.clientY);
+    });
+
+    window.addEventListener('mouseup', () => {
+      isClicking = false;
+      container.classList.remove('is-clicking');
+    });
+
+    document.addEventListener('mouseleave', () => {
+      isVisible = false;
+      container.classList.add('cursor-hidden');
+    });
+
+    document.addEventListener('mouseenter', () => {
+      isVisible = true;
+      container.classList.remove('cursor-hidden');
+    });
+
+    window.addEventListener('blur', () => {
+      isVisible = false;
+      container.classList.add('cursor-hidden');
+    });
+
+    window.addEventListener('focus', () => {
+      isVisible = true;
+      container.classList.remove('cursor-hidden');
+    });
+  }
+
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', setupCursor);
+  } else {
+    setupCursor();
+  }
+})();
+
+
 
 
