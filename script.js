@@ -484,22 +484,22 @@ document.addEventListener('DOMContentLoaded', () => {
     let isVisible = false;
     let magnetTarget = null;
 
-    // Particle spark pool
+    // Particle spark pool (micro particles)
     const particles = [];
-    const sparkColors = ['#14B8A6', '#2563EB', '#38BDF8', '#F59E0B', '#10B981'];
+    const sparkColors = ['#14B8A6', '#2563EB', '#38BDF8', '#F59E0B'];
 
     function spawnParticle(x, y, speed, angleOffset = null) {
-      if (particles.length > 22) return;
+      if (particles.length > 10) return;
       const angle = angleOffset !== null ? angleOffset : Math.random() * Math.PI * 2;
-      const velocity = (angleOffset !== null ? (Math.random() * 2 + 1.5) : (Math.random() * 1.5 + 0.5)) * Math.min(speed * 0.15 + 0.8, 3.5);
+      const velocity = (angleOffset !== null ? (Math.random() * 1.5 + 1.0) : (Math.random() * 1.0 + 0.4)) * Math.min(speed * 0.12 + 0.6, 2.5);
       particles.push({
-        x: x + (Math.random() - 0.5) * 6,
-        y: y + (Math.random() - 0.5) * 6,
+        x: x + (Math.random() - 0.5) * 4,
+        y: y + (Math.random() - 0.5) * 4,
         vx: Math.cos(angle) * velocity,
         vy: Math.sin(angle) * velocity,
-        size: Math.random() * 2.2 + 1.2,
-        life: 1.0,
-        decay: Math.random() * 0.03 + 0.035,
+        size: Math.random() * 1.4 + 1.0,
+        life: 0.9,
+        decay: Math.random() * 0.04 + 0.05,
         color: sparkColors[Math.floor(Math.random() * sparkColors.length)]
       });
     }
@@ -512,11 +512,11 @@ document.addEventListener('DOMContentLoaded', () => {
       container.appendChild(ripple);
       setTimeout(() => {
         if (ripple.parentNode) ripple.parentNode.removeChild(ripple);
-      }, 500);
+      }, 400);
 
-      // Micro spark explosion on click
-      for (let i = 0; i < 7; i++) {
-        spawnParticle(x, y, 4, (i / 7) * Math.PI * 2);
+      // 4 tiny sparks on click
+      for (let i = 0; i < 4; i++) {
+        spawnParticle(x, y, 3, (i / 4) * Math.PI * 2);
       }
     }
 
@@ -532,44 +532,44 @@ document.addEventListener('DOMContentLoaded', () => {
           const rect = magnetTarget.getBoundingClientRect();
           const centerX = rect.left + rect.width / 2;
           const centerY = rect.top + rect.height / 2;
-          // Soft magnetic gravity pull toward element center
-          destX = mouseX + (centerX - mouseX) * 0.32;
-          destY = mouseY + (centerY - mouseY) * 0.32;
+          // Soft magnetic pull toward element center
+          destX = mouseX + (centerX - mouseX) * 0.28;
+          destY = mouseY + (centerY - mouseY) * 0.28;
         }
 
-        // Smooth damped linear interpolation (Lerp)
+        // Snappy damped linear interpolation (Lerp 0.22)
         const dx = destX - followerX;
         const dy = destY - followerY;
         const dist = Math.hypot(dx, dy);
 
-        followerX += dx * 0.18;
-        followerY += dy * 0.18;
+        followerX += dx * 0.22;
+        followerY += dy * 0.22;
 
-        // Dynamic aerodynamic stretch & squash along velocity vector
-        if (dist > 1.2) {
+        // Subtle aerodynamic stretch & squash along velocity vector
+        if (dist > 1.0) {
           const targetAngle = Math.atan2(dy, dx);
           let angleDiff = targetAngle - currentAngle;
           while (angleDiff < -Math.PI) angleDiff += Math.PI * 2;
           while (angleDiff > Math.PI) angleDiff -= Math.PI * 2;
-          currentAngle += angleDiff * 0.22;
-          targetStretch = Math.min(1 + dist * 0.0035, 1.32);
+          currentAngle += angleDiff * 0.25;
+          targetStretch = Math.min(1 + dist * 0.003, 1.18);
         } else {
           targetStretch = 1;
         }
 
-        currentStretch += (targetStretch - currentStretch) * 0.2;
-        const squash = 1 / Math.max(0.65, currentStretch * 0.88);
+        currentStretch += (targetStretch - currentStretch) * 0.25;
+        const squash = 1 / Math.max(0.75, currentStretch * 0.92);
 
-        // Render follower aura
+        // Render follower aura (16px micro-ring)
         aura.style.transform = `translate3d(${followerX}px, ${followerY}px, 0) translate(-50%, -50%) rotate(${currentAngle}rad) scale(${currentStretch}, ${squash})`;
 
-        // Render pinpoint dot (instantaneous 1:1 aiming)
-        const dotScale = isClicking ? 0.6 : 1;
+        // Render pinpoint dot (instantaneous 1:1 aiming, 4px micro-dot)
+        const dotScale = isClicking ? 0.65 : 1;
         dot.style.transform = `translate3d(${mouseX}px, ${mouseY}px, 0) translate(-50%, -50%) scale(${dotScale})`;
 
-        // Spawn trailing sparks during swift movement
+        // Spawn trailing micro-sparks only during fast movements
         particleThrottle++;
-        if (dist > 3.5 && particleThrottle % 2 === 0) {
+        if (dist > 5.0 && particleThrottle % 3 === 0) {
           spawnParticle(followerX, followerY, dist);
         }
       }
@@ -581,9 +581,9 @@ document.addEventListener('DOMContentLoaded', () => {
           const p = particles[i];
           p.x += p.vx;
           p.y += p.vy;
-          p.vx *= 0.94;
-          p.vy *= 0.94;
-          p.size *= 0.96;
+          p.vx *= 0.92;
+          p.vy *= 0.92;
+          p.size *= 0.95;
           p.life -= p.decay;
 
           if (p.life <= 0 || p.size <= 0.4) {
@@ -592,10 +592,10 @@ document.addEventListener('DOMContentLoaded', () => {
           }
 
           ctx.save();
-          ctx.globalAlpha = Math.max(0, p.life);
+          ctx.globalAlpha = Math.max(0, p.life * 0.7);
           ctx.fillStyle = p.color;
           ctx.shadowColor = p.color;
-          ctx.shadowBlur = 6;
+          ctx.shadowBlur = 4;
           ctx.beginPath();
           ctx.arc(p.x, p.y, p.size, 0, Math.PI * 2);
           ctx.fill();
